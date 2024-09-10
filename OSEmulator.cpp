@@ -7,8 +7,7 @@
 
 int main()
 {
-    printAscii("3D_CSOPESY.txt");
-    printMsgNewLine("Hello, Welcome to CSOPESY commandline!");
+    printHeader("3D_CSOPESY.txt");
     
     std::string userInput = "";
     std::string formattedInput = "";
@@ -19,6 +18,7 @@ int main()
 
         if (formattedInput == "clear") {
             std::cout << "\033[2J\033[1;1H"; // ANSII escape code for clearning the screen
+            printHeader("3D_CSOPESY.txt");
         }
 
         else if (formattedInput == "initialize") {

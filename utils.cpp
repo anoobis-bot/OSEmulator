@@ -30,6 +30,12 @@ void printMsg(std::string msg) {
     std::cout << msg;
 }
 
+void printHeader(std::string headerFile) {
+    printAscii(headerFile);
+    printMsgNewLine("Hello, Welcome to CSOPESY commandline!");
+}
+
+
 std::string toLowerCase(const std::string str) {
     std::string lowerStr = str;
     std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
