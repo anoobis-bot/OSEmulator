@@ -11,6 +11,7 @@ int main()
     
     std::string userInput = "";
     std::string formattedInput = "";
+    printMsgNewLine("Type 'exit' to quit, 'clear' to clear the screen.");
     while (formattedInput != "exit") {
         printMsg("Command: ");
         std::cin >> userInput;
@@ -22,23 +23,23 @@ int main()
         }
 
         else if (formattedInput == "initialize") {
-            printMsgNewLine("Initialize command recognized. Doing something");
+            printMsgNewLine("initialize command recognized. Doing something");
         }
 
         else if (formattedInput == "screen") {
-            printMsgNewLine("Screen command recognized. Doing something");
+            printMsgNewLine("screen command recognized. Doing something");
         }
 
         else if (formattedInput == "scheduler-test") {
-            printMsgNewLine("Scheduler-test command recognized. Doing something");
+            printMsgNewLine("scheduler-test command recognized. Doing something");
         }
 
         else if (formattedInput == "scheduler-stop") {
-            printMsgNewLine("Scheduler-stop command recognized. Doing something");
+            printMsgNewLine("scheduler-stop command recognized. Doing something");
         }
 
         else if (formattedInput == "report-util") {
-            printMsgNewLine("Report-util command recognized. Doing something");
+            printMsgNewLine("report-util command recognized. Doing something");
         }
 
 
