@@ -36,8 +36,9 @@ void printHeader(std::string headerFile) {
 }
 
 
-std::string toLowerCase(const std::string str) {
-    std::string lowerStr = str;
-    std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
-    return lowerStr;
+std::string toLowerCase(std::string str) {
+    for (char& c : str) {
+        c = std::tolower(c);
+    }
+    return str;
 }
