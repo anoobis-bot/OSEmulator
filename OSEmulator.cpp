@@ -2,9 +2,8 @@
 //
 
 #include <iostream>
-#include <chrono>
+#include <chrono> 
 #include <thread>
-#include <sstream>
 #include "utils.h"
 #include "ConsoleManager.h"
 #include "BaseScreen.h"
@@ -34,22 +33,10 @@ int main() {
         std::getline(std::cin, userInput);  // Use getline to capture full input
         formattedInput = toLowerCase(userInput);
 
-        if (formattedInput.substr(0, 6) == "screen") {
-            auto [command, screenName] = parseScreenCommand(formattedInput);
-
-            if (command == "-r") {
-                consoleManager->switchToScreen(screenName);
-            } else if (command == "-s") {
-                auto screen = std::make_shared<BaseScreen>(screenName, std::make_shared<String>(screenName));
-                consoleManager->registerScreen(screen);
-                consoleManager->switchToScreen(screenName);
-            }
-        } 
-        else if (formattedInput == "exit") {
-            consoleManager->returnToPreviousConsole();
-        } 
-        else if (formattedInput == "clear") {
-            std::cout << "\033[2J\033[1;1H"; // Clear the screen
+        if (formattedInput == "clear") {
+            printMsgNewLine("clear command recognized. Doing something.");
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::cout << "\033[2J\033[1;1H"; // ANSII escape code for clearning the screen
             printHeader("3D_CSOPESY.txt");
         }
         else if (formattedInput == "initialize") {
