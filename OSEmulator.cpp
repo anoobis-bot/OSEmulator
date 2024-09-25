@@ -2,8 +2,6 @@
 //
 
 #include <iostream>
-#include <chrono> 
-#include <thread>
 #include "utils.h"
 
 int main()
@@ -20,7 +18,6 @@ int main()
 
         if (formattedInput == "clear") {
             printMsgNewLine("clear command recognized. Doing something.");
-            std::this_thread::sleep_for(std::chrono::seconds(1));
             std::cout << "\033[2J\033[1;1H"; // ANSII escape code for clearning the screen
             printHeader("3D_CSOPESY.txt");
         }
