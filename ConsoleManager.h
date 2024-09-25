@@ -10,34 +10,37 @@ const String MAIN_CONSOLE = "MAIN_CONSOLE";
 class ConsoleManager
 {
 public:
-	typedef std::unordered_map<String, std::shared_ptr<AConsole>> ConsoleTable;
+    typedef std::unordered_map<String, std::shared_ptr<AConsole>> ConsoleTable;
 
-	static ConsoleManager* getInstance();
-	static void initialize();
-	static void destroy();
+    static ConsoleManager* getInstance();
+    static void initialize();
+    static void destroy();
 
-	void drawConsole();
-	void process();
-	void switchConsole(String consoleName);
+    void drawConsole();
+    void process();
+    void switchConsole(String consoleName);
 
-	void registerScreen(std::shared_ptr<BaseScreen> screenRef);
-	void switchToScreen(String screenName);
-	void unregisterScreen(String screenName);
+    // New methods to handle screen creation and switching
+    void registerScreen(std::shared_ptr<BaseScreen> screenRef);
+    void switchToScreen(String screenName);
+    void unregisterScreen(String screenName);
 
-	void returnToPreviousConsole();
-	void exitApplication();
-	bool isRunning();
+    void returnToPreviousConsole();
+    void exitApplication();
+    bool isRunning();
+
+    // New method to check if a screen is already registered
+    bool isScreenRegistered(const String& screenName);
 
 private:
-	ConsoleManager();
-	~ConsoleManager();
-	ConsoleManager(ConsoleManager const&) {};
-	static ConsoleManager* sharedInstance;
+    ConsoleManager();
+    ~ConsoleManager();
+    ConsoleManager(ConsoleManager const&) = delete;
+    static ConsoleManager* sharedInstance;
 
-	ConsoleTable consoleTable;
-	std::shared_ptr<AConsole> previousConsole;
-	std::shared_ptr<AConsole> currentConsole;
+    ConsoleTable consoleTable;
+    std::shared_ptr<AConsole> previousConsole;
+    std::shared_ptr<AConsole> currentConsole;
 
-	bool running = true;
+    bool running = true;
 };
-

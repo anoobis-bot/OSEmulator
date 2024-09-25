@@ -1,19 +1,17 @@
 #pragma once
 #include "TypedefRepo.h"
 
-class AConsole
-{
+class AConsole {
 public:
-	AConsole(String name);
-	~AConsole() = default;
+    AConsole(String name) : name(name) {}
+    virtual ~AConsole() = default;
 
-	String getName();
-	virtual void onEnabled() = 0;
-	virtual void display() = 0;
-	virtual void process() = 0;
+    String getName() { return name; }
+    virtual void onEnabled() = 0;
+    virtual void display() = 0;
+    virtual void process() = 0;
 
-	String name;
-	friend class ConsoleManager;
+protected:
+    String name;
+    friend class ConsoleManager;
 };
-
-

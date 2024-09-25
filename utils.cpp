@@ -4,23 +4,22 @@
 #include <algorithm>
 
 int printAscii(std::string fileName) {
-    std::ifstream file;  // Open the file
+    std::ifstream file;
     file.open(fileName);
 
     if (!file) {
         std::cerr << "Unable to open file art.txt" << std::endl;
-        return 1;  // Exit if file cannot be opened
+        return 1;
     }
 
     std::string line;
-    while (std::getline(file, line)) {   // Read file line by line
-        std::cout << line << std::endl;  // Print each line
+    while (std::getline(file, line)) {
+        std::cout << line << std::endl;
     }
 
-    file.close();  // Close the file
+    file.close();
     return 0;
 }
-
 
 void printMsgNewLine(std::string msg) {
     std::cout << msg << std::endl;
@@ -34,7 +33,6 @@ void printHeader(std::string headerFile) {
     printAscii(headerFile);
     printMsgNewLine("Hello, Welcome to CSOPESY commandline!");
 }
-
 
 std::string toLowerCase(std::string str) {
     for (char& c : str) {
