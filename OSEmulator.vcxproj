@@ -131,6 +131,7 @@
     <ClCompile Include="AConsole.cpp" />
     <ClCompile Include="BaseScreen.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
+    <ClCompile Include="MainScreen.cpp" />
     <ClCompile Include="OSEmulator.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
@@ -138,6 +139,7 @@
     <ClInclude Include="AConsole.h" />
     <ClInclude Include="BaseScreen.h" />
     <ClInclude Include="ConsoleManager.h" />
+    <ClInclude Include="MainScreen.h" />
     <ClInclude Include="TypedefRepo.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

@@ -1,5 +1,5 @@
 #include "ConsoleManager.h"
-#include <iostream>  // Make sure this line is included
+#include <iostream>  
 
 ConsoleManager* ConsoleManager::sharedInstance = nullptr;
 
@@ -40,7 +40,7 @@ void ConsoleManager::switchToScreen(String screenName) {
         currentConsole = consoleTable[screenName];
         currentConsole->onEnabled();
     } else {
-        std::cout << "Screen does not exist, create one first." << std::endl;  // Use std::cout and std::endl
+        std::cout << "Screen does not exist, create one first." << std::endl;  
     }
 }
 
