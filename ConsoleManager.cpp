@@ -15,7 +15,7 @@ void ConsoleManager::destroy() {
     delete sharedInstance;
 }
 
-ConsoleManager::ConsoleManager() : currentConsole(nullptr), previousConsole(nullptr) {}
+ConsoleManager::ConsoleManager() : currentConsole(nullptr) {}
 
 ConsoleManager::~ConsoleManager() {}
 
@@ -26,23 +26,27 @@ void ConsoleManager::drawConsole() {
 }
 
 void ConsoleManager::switchConsole(String consoleName) {
-    auto it = consoleTable.find(consoleName);
-    if (it != consoleTable.end()) {
+    auto switchConsole = consoleTable.find(consoleName);
+    if (switchConsole != consoleTable.end()) {
         previousConsole = currentConsole;
-        currentConsole = it->second;
+        currentConsole = switchConsole->second;
         currentConsole->onEnabled();
     }
 }
 
 void ConsoleManager::switchToScreen(String screenName) {
     if (isScreenRegistered(screenName)) {
-        previousConsole = currentConsole;
-        currentConsole = consoleTable[screenName];
-        currentConsole->onEnabled();
-    } else {
-        std::cout << "Screen does not exist, create one first." << std::endl;  
+        system("cls");
+        previousConsole = currentConsole; 
+        currentConsole = consoleTable[screenName];  
+        currentConsole->onEnabled();  
+    }
+    else {
+        std::cout << "Screen does not exist, create one first." << std::endl;
     }
 }
+
+
 
 void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef) {
     consoleTable[screenRef->getName()] = screenRef;
@@ -55,8 +59,23 @@ void ConsoleManager::unregisterScreen(String screenName) {
 void ConsoleManager::returnToPreviousConsole() {
     if (previousConsole) {
         currentConsole = previousConsole;
+        previousConsole = nullptr;
+        system("cls");
+        currentConsole->onExecute();
+    }
+    else {
+        std::cerr << "No previous screen to return to." << std::endl;
     }
 }
+
+void ConsoleManager::createProcessScreen(String processName) {
+    auto processScreen = std::make_shared<BaseScreen>(processName, std::make_shared<String>(processName));
+
+    registerScreen(processScreen);  
+
+    switchToScreen(processScreen->getName());
+}
+
 
 bool ConsoleManager::isScreenRegistered(const String& screenName) {
     return consoleTable.find(screenName) != consoleTable.end();

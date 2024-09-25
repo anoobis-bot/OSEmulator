@@ -19,7 +19,8 @@ void MainScreen::onExecute() {
 }
 
 void MainScreen::onEnabled() {
-
+    system("cls");
+    onExecute();
 }
 
 void MainScreen::display() {
@@ -57,30 +58,38 @@ void MainScreen::handleCommand(String command) {
     auto consoleManager = ConsoleManager::getInstance();
 
     if (formattedInput.substr(0, 6) == "screen") {
-        auto [screenCommand, screenName] = parseScreenCommand(formattedInput);
+        auto [screenCommand, processName] = parseScreenCommand(formattedInput);
 
-        // validate if the screenCommand is either "-r" or "-s"
-        if (screenCommand != "-r" && screenCommand != "-s") {
-            printMsgNewLine("Error: Missing or invalid arguments. Use 'screen -r <name>' or 'screen -s <name>'.");
-        }
-        else if (screenName.empty()) {
-            // ensure that a screen name is provided
-            printMsgNewLine("Error: Missing process name. Use 'screen -r <name>' or 'screen -s <name>'.");
-        }
-        else {
-            if (screenCommand == "-r") {
-                consoleManager->switchToScreen(screenName);
+        if (screenCommand == "-s") {
+            if (processName.empty()) {
+                std::cout << "Command not recognized! Please provide a process name." << std::endl;
             }
-            else if (screenCommand == "-s") {
-                auto screen = std::make_shared<BaseScreen>(screenName, std::make_shared<String>(screenName));
-                consoleManager->registerScreen(screen);
-                consoleManager->switchToScreen(screenName);
+            else {
+                if (!consoleManager->isScreenRegistered(processName)) { // Check if the screen exists
+                    consoleManager->createProcessScreen(processName);
+                }
+                else {
+                    std::cout << "Process already exists or has existed. Please provide a different name." << std::endl;
+                }
+            }
+        }
+        else if (screenCommand == "-r") {
+            if (processName.empty()) {
+                std::cout << "Command not recognized! Please provide a process name." << std::endl;
+            }
+            else {
+                if (!consoleManager->isScreenRegistered(processName)) {
+                    std::cout << "Process " << processName << " not found." << std::endl;
+                }
+                else {
+                    consoleManager->switchConsole(processName);
+                }
             }
         }
     }
 
     else if (formattedInput == "clear") {
-        std::cout << "\033[2J\033[1;1H";  // Clear the screen
+        system("cls");  // Clear the screen
         printHeader("3D_CSOPESY.txt");
     }
     else if (formattedInput == "initialize") {

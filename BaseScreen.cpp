@@ -1,4 +1,6 @@
 #include "BaseScreen.h"
+#include "utils.h"
+#include "ConsoleManager.h"
 #include <iostream>
 #include <chrono>
 #include <iomanip>
@@ -12,11 +14,37 @@ void BaseScreen::onEnabled() {
 }
 
 void BaseScreen::display() {
-    printProcessInfo();
+    system("cls");  
+    printProcessInfo(); 
 }
 
 void BaseScreen::process() {
-    // Custom process logic for the screen
+    auto consoleManager = ConsoleManager::getInstance();
+    String command;
+    while (true) {
+        String command;
+        while (true) {
+            std::cout << "root\\";
+            std::getline(std::cin, command);
+
+            if (toLowerCase(command) == "exit") {
+                consoleManager->returnToPreviousConsole();  
+            }
+            handleCommand(command);
+        }
+    }
+}
+
+void BaseScreen::handleCommand(String command) {
+    std::string formattedInput = toLowerCase(command);  // Lowercase input for comparison
+
+    if (formattedInput == "clear") {
+        system("cls");
+        printProcessInfo();  
+    }
+    else {
+        printMsgNewLine("Invalid command. Available commands: clear, exit.");
+    }
 }
 
 void BaseScreen::printProcessInfo() {
@@ -25,7 +53,7 @@ void BaseScreen::printProcessInfo() {
     localtime_s(&localTime, &currentTime);
 
     std::cout << "Process Name: " << name << std::endl;
-    std::cout << "Instruction Line: 0 / 100" << std::endl;  // Placeholder values
+    std::cout << "Instruction Line: 0 / 100" << std::endl; 
     std::cout << "Screen Created At: "
         << std::put_time(&localTime, "%m/%d/%Y, %I:%M:%S %p") << std::endl;
 }

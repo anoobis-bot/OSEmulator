@@ -20,16 +20,15 @@ public:
     void process();
     void switchConsole(String consoleName);
 
-    // New methods to handle screen creation and switching
     void registerScreen(std::shared_ptr<BaseScreen> screenRef);
     void switchToScreen(String screenName);
     void unregisterScreen(String screenName);
+	void createProcessScreen(String processName);
 
     void returnToPreviousConsole();
     void exitApplication();
     bool isRunning();
 
-    // New method to check if a screen is already registered
     bool isScreenRegistered(const String& screenName);
 
 private:

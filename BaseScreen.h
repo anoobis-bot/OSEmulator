@@ -14,4 +14,5 @@ private:
     void printProcessInfo();
     std::shared_ptr<String> attachedProcess;
     bool refreshed = false;
+    void handleCommand(String command);
 };
