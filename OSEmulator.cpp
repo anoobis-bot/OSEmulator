@@ -2,8 +2,9 @@
 //
 
 #include <iostream>
-#include <chrono> 
+#include <chrono>
 #include <thread>
+#include <sstream>
 #include "utils.h"
 #include "ConsoleManager.h"
 #include "BaseScreen.h"
@@ -15,7 +16,7 @@ std::pair<String, String> parseScreenCommand(String userInput) {
     if (ss >> command && (command == "-r" || command == "-s")) {
         ss >> name;  // Gets the <name>
     }
-    return {command, name};
+    return { command, name };
 }
 
 int main() {
@@ -23,7 +24,7 @@ int main() {
     auto consoleManager = ConsoleManager::getInstance();
 
     printHeader("3D_CSOPESY.txt");
-    
+
     std::string userInput = "";
     std::string formattedInput = "";
     printMsgNewLine("Type 'exit' to quit, 'clear' to clear the screen.");
@@ -33,10 +34,23 @@ int main() {
         std::getline(std::cin, userInput);  // Use getline to capture full input
         formattedInput = toLowerCase(userInput);
 
-        if (formattedInput == "clear") {
-            printMsgNewLine("clear command recognized. Doing something.");
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-            std::cout << "\033[2J\033[1;1H"; // ANSII escape code for clearning the screen
+        if (formattedInput.substr(0, 6) == "screen") {
+            auto [command, screenName] = parseScreenCommand(formattedInput);
+
+            if (command == "-r") {
+                consoleManager->switchToScreen(screenName);
+            }
+            else if (command == "-s") {
+                auto screen = std::make_shared<BaseScreen>(screenName, std::make_shared<String>(screenName));
+                consoleManager->registerScreen(screen);
+                consoleManager->switchToScreen(screenName);
+            }
+        }
+        else if (formattedInput == "exit") {
+            consoleManager->returnToPreviousConsole();
+        }
+        else if (formattedInput == "clear") {
+            std::cout << "\033[2J\033[1;1H"; // Clear the screen
             printHeader("3D_CSOPESY.txt");
         }
         else if (formattedInput == "initialize") {
