@@ -1,14 +1,22 @@
 #include "ConsoleManager.h"
+#include "MainScreen.h"
 #include <iostream>  
 
 ConsoleManager* ConsoleManager::sharedInstance = nullptr;
 
 ConsoleManager* ConsoleManager::getInstance() {
+    if (!sharedInstance) {
+        sharedInstance = new ConsoleManager();
+        sharedInstance->initialize();
+    }
     return sharedInstance;
 }
 
 void ConsoleManager::initialize() {
-    sharedInstance = new ConsoleManager();
+    sharedInstance = new ConsoleManager(); 
+    std::shared_ptr<BaseScreen> mainScreen = std::make_shared<MainScreen>();
+    sharedInstance->registerScreen(mainScreen); 
+    sharedInstance->currentConsole = mainScreen;
 }
 
 void ConsoleManager::destroy() {
@@ -46,8 +54,6 @@ void ConsoleManager::switchToScreen(String screenName) {
     }
 }
 
-
-
 void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef) {
     consoleTable[screenRef->getName()] = screenRef;
 }
@@ -79,4 +85,8 @@ void ConsoleManager::createProcessScreen(String processName) {
 
 bool ConsoleManager::isScreenRegistered(const String& screenName) {
     return consoleTable.find(screenName) != consoleTable.end();
+}
+
+std::shared_ptr<AConsole> ConsoleManager::getCurrentConsole() {
+    return currentConsole; 
 }

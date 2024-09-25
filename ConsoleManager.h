@@ -25,6 +25,7 @@ public:
     void unregisterScreen(String screenName);
 	void createProcessScreen(String processName);
 
+    std::shared_ptr<AConsole> getCurrentConsole();
     void returnToPreviousConsole();
     void exitApplication();
     bool isRunning();

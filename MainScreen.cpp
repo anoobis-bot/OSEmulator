@@ -5,8 +5,9 @@
 #include "utils.h"
 #include "ConsoleManager.h"
 #include "MainScreen.h"
+#include <memory>
 
-MainScreen::MainScreen(): AConsole("MAIN_MENU") {
+MainScreen::MainScreen(): BaseScreen("MAIN_CONSOLE", std::make_shared<String>("MAIN_CONSOLE")) {
 }
 
 MainScreen::~MainScreen() {
@@ -41,11 +42,18 @@ void MainScreen::process() {
     String command;
     printMsgNewLine("Type 'exit' to quit, 'clear' to clear the screen.");
     while (true) {
+        auto consoleManager = ConsoleManager::getInstance(); 
+        auto currentConsole = consoleManager->getCurrentConsole();
         std::cout << "root:\\> ";
         std::getline(std::cin, command);
 
         if (toLowerCase(command) == "exit") {
-            break;
+            if (currentConsole->getName() == "MAIN_CONSOLE") {
+                break; // Exit the program
+            }
+            else {
+                std::dynamic_pointer_cast<BaseScreen>(currentConsole)->exitScreen();
+            }
         }
 
         handleCommand(command); 
@@ -90,7 +98,6 @@ void MainScreen::handleCommand(String command) {
 
     else if (formattedInput == "clear") {
         system("cls");  // Clear the screen
-        printHeader("3D_CSOPESY.txt");
     }
     else if (formattedInput == "initialize") {
         printMsg("initialize command recognized. Doing something");

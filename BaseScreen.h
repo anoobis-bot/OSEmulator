@@ -9,6 +9,7 @@ public:
     void process() override;
     void display() override;
     void onExecute() override {};
+    void exitScreen();
 
 private:
     void printProcessInfo();

@@ -3,7 +3,7 @@
 #include <memory>
 #include "TypedefRepo.h"
 
-class MainScreen : public AConsole {
+class MainScreen : public BaseScreen {
 public:
     MainScreen(); 
     ~MainScreen(); 
@@ -19,4 +19,5 @@ private:
     bool refreshed = false;
     void displayHeader();
     void handleCommand(String command);
+    bool isDisplayed = false;
 };

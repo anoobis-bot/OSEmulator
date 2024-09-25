@@ -28,7 +28,7 @@ void BaseScreen::process() {
             std::getline(std::cin, command);
 
             if (toLowerCase(command) == "exit") {
-                consoleManager->returnToPreviousConsole();  
+                exitScreen();
             }
             handleCommand(command);
         }
@@ -56,4 +56,9 @@ void BaseScreen::printProcessInfo() {
     std::cout << "Instruction Line: 0 / 100" << std::endl; 
     std::cout << "Screen Created At: "
         << std::put_time(&localTime, "%m/%d/%Y, %I:%M:%S %p") << std::endl;
+}
+
+void BaseScreen::exitScreen() {
+	auto consoleManager = ConsoleManager::getInstance();
+	consoleManager->returnToPreviousConsole();
 }
