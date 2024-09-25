@@ -28,7 +28,7 @@ void BaseScreen::process() {
             std::getline(std::cin, command);
 
             if (toLowerCase(command) == "exit") {
-                consoleManager->returnToPreviousConsole();  
+                consoleManager->switchConsole(MAIN_CONSOLE);
             }
             handleCommand(command);
         }
@@ -47,7 +47,7 @@ void BaseScreen::handleCommand(String command) {
     }
 }
 
-void BaseScreen::printProcessInfo() {
+void BaseScreen::printProcessInfo() const {
     auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::tm localTime;
     localtime_s(&localTime, &currentTime);

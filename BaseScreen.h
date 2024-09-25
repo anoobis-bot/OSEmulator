@@ -11,7 +11,7 @@ public:
     void onExecute() override {};
 
 private:
-    void printProcessInfo();
+    void printProcessInfo() const;
     std::shared_ptr<String> attachedProcess;
     bool refreshed = false;
     void handleCommand(String command);

@@ -8,6 +8,7 @@ public:
 
     String getName() { return name; }
     virtual void onEnabled() = 0;
+    virtual void onExecute() = 0;
     virtual void display() = 0;
     virtual void process() = 0;
 

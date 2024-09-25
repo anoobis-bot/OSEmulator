@@ -5,10 +5,15 @@
 
 int main() {
     ConsoleManager::initialize();
-    auto consoleManager = ConsoleManager::getInstance();
+    bool running = true;
 
-    MainScreen mainScreen;
-    mainScreen.onExecute(); 
+    while (running) {
+        ConsoleManager::getInstance()->process();
+        ConsoleManager::getInstance()->drawConsole();
+
+        running = ConsoleManager::getInstance()->isRunning();
+    }
+
 
     printMsg("Program Terminated");
     ConsoleManager::destroy();  

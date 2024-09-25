@@ -6,6 +6,9 @@
 #include "TypedefRepo.h"
 
 const String MAIN_CONSOLE = "MAIN_CONSOLE";
+const String MARQUEE_CONSOLE = "MARQUEE_CONSOLE";
+const String SCHEDULING_CONSOLE = "SCHEDULING_CONSOLE";
+const String MEMORY_CONSOLE = "MEMORY_CONSOLE";
 
 class ConsoleManager
 {
@@ -16,8 +19,8 @@ public:
     static void initialize();
     static void destroy();
 
-    void drawConsole();
-    void process();
+    void drawConsole() const;
+    void process() const;
     void switchConsole(String consoleName);
 
     void registerScreen(std::shared_ptr<BaseScreen> screenRef);
@@ -27,19 +30,20 @@ public:
 
     void returnToPreviousConsole();
     void exitApplication();
-    bool isRunning();
+    bool isRunning() const;
 
     bool isScreenRegistered(const String& screenName);
 
 private:
     ConsoleManager();
-    ~ConsoleManager();
-    ConsoleManager(ConsoleManager const&) = delete;
+    ~ConsoleManager() = default;
+    ConsoleManager(ConsoleManager const&) {};
+    ConsoleManager& operator=(ConsoleManager const&) {};
     static ConsoleManager* sharedInstance;
 
     ConsoleTable consoleTable;
     std::shared_ptr<AConsole> previousConsole;
     std::shared_ptr<AConsole> currentConsole;
 
-    bool running = true;
+    bool running;
 };

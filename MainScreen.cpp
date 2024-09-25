@@ -45,7 +45,8 @@ void MainScreen::process() {
         std::getline(std::cin, command);
 
         if (toLowerCase(command) == "exit") {
-            break;
+            auto consoleManager = ConsoleManager::getInstance();
+            consoleManager->exitApplication();
         }
 
         handleCommand(command); 
@@ -108,6 +109,4 @@ void MainScreen::handleCommand(String command) {
         printMsgNewLine("Command not found. These are the available commands: ");
         printMsg("initialize, screen, scheduler-test, scheduler-stop, report-util, clear, and exit.");
     }
-
-    consoleManager->drawConsole();
 }
