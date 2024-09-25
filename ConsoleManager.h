@@ -3,6 +3,8 @@
 #include <memory>
 #include "TypedefRepo.h"
 
+const String MAIN_CONSOLE = "MAIN_CONSOLE";
+
 class ConsoleManager
 {
 public:
