@@ -1,64 +1,64 @@
 #include "BaseScreen.h"
-#include "utils.h"
 #include "ConsoleManager.h"
 #include <iostream>
-#include <chrono>
-#include <iomanip>
-#include <ctime>
+#include "utils.h"
 
-BaseScreen::BaseScreen(String processName, std::shared_ptr<String> attachedProcess)
-    : AConsole(processName), attachedProcess(attachedProcess) {}
-
-void BaseScreen::onEnabled() {
-    refreshed = true;
+BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName) : AConsole(processName)
+{
+	this->attachedProcess = process;
 }
 
-void BaseScreen::display() {
-    system("cls");  
-    printProcessInfo(); 
+void BaseScreen::onEnabled()
+{
+	process();
 }
 
-void BaseScreen::process() {
-    auto consoleManager = ConsoleManager::getInstance();
-    String command;
-    while (true) {
-        String command;
-        while (true) {
-            std::cout << "root\\";
-            std::getline(std::cin, command);
+void BaseScreen::process()
+{
+	if (this->refreshed == false)
+	{
+		this->refreshed = true;
+		this->printProcessInfo();
+	}
 
-            if (toLowerCase(command) == "exit") {
-                exitScreen();
-            }
-            handleCommand(command);
-        }
-    }
+	std::string command;
+	while (command != "exit")
+	{
+		std::cout << "root:\>";
+		std::getline(std::cin, command);
+
+		if (command == "clear" || command == "cls")
+		{
+			system("cls");
+			this->printProcessInfo();
+		}
+		else if (command == "exit")
+		{
+			this->refreshed = false;
+			ConsoleManager::getInstance()->returnToPreviousConsole();
+		}
+		else
+		{
+			printMsgNewLine("Command not found.");
+			printMsgNewLine("");
+		}
+	}
 }
 
-void BaseScreen::handleCommand(String command) {
-    std::string formattedInput = toLowerCase(command);  // Lowercase input for comparison
-
-    if (formattedInput == "clear") {
-        system("cls");
-        printProcessInfo();  
-    }
-    else {
-        printMsgNewLine("Invalid command. Available commands: clear, exit.");
-    }
+void BaseScreen::display()
+{
+	this->printProcessInfo();
 }
 
-void BaseScreen::printProcessInfo() {
-    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    std::tm localTime;
-    localtime_s(&localTime, &currentTime);
+void BaseScreen::printProcessInfo() const
+{
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	std::tm localTime;
+	localtime_s(&localTime, &currentTime);
 
-    std::cout << "Process Name: " << name << std::endl;
-    std::cout << "Instruction Line: 0 / 100" << std::endl; 
-    std::cout << "Screen Created At: "
-        << std::put_time(&localTime, "%m/%d/%Y, %I:%M:%S %p") << std::endl;
-}
+	std::cout << "Process Name: " << name << std::endl;
+	std::cout << "Instruction Line: 0 / 100" << std::endl;
+	std::cout << "Screen Created At: "
+		<< std::put_time(&localTime, "%m/%d/%Y, %I:%M:%S %p") << std::endl;
 
-void BaseScreen::exitScreen() {
-	auto consoleManager = ConsoleManager::getInstance();
-	consoleManager->returnToPreviousConsole();
 }

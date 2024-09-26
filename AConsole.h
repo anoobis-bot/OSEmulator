@@ -1,18 +1,17 @@
 #pragma once
-#include "TypedefRepo.h"
-
-class AConsole {
+#include <string>
+class AConsole
+{
 public:
-    AConsole(String name) : name(name) {}
-    virtual ~AConsole() = default;
+	typedef std::string String;
+	AConsole(String name);
+	~AConsole() = default;
 
-    String getName() { return name; }
-    virtual void onEnabled() = 0;
-    virtual void onExecute() = 0;
-    virtual void display() = 0;
-    virtual void process() = 0;
+	String getName();
+	virtual void onEnabled() = 0; // Called when the console is first drawn
+	virtual void display() = 0; // called per frame, drawing proper
+	virtual void process() = 0; // process input
 
-protected:
-    String name;
-    friend class ConsoleManager;
+	String name;
+	friend class ConsoleManager;
 };

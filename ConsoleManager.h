@@ -1,46 +1,49 @@
 #pragma once
-#include <unordered_map>
 #include <memory>
+#include <vector>
 #include "AConsole.h"
-#include "BaseScreen.h"
+#include <unordered_map>
+#include <Windows.h>
 #include "TypedefRepo.h"
+#include "BaseScreen.h"
 
 const String MAIN_CONSOLE = "MAIN_CONSOLE";
 
 class ConsoleManager
 {
 public:
-    typedef std::unordered_map<String, std::shared_ptr<AConsole>> ConsoleTable;
+	typedef std::unordered_map<String, std::shared_ptr<AConsole>> ConsoleTable;
 
-    static ConsoleManager* getInstance();
-    static void initialize();
-    static void destroy();
+	static ConsoleManager* getInstance();
+	static void initialize();
+	static void destroy();
 
-    void drawConsole();
-    void process();
-    void switchConsole(String consoleName);
+	void drawConsole() const;
+	void process() const;
+	void switchConsole(String consoleName);
 
-    void registerScreen(std::shared_ptr<BaseScreen> screenRef);
-    void switchToScreen(String screenName);
-    void unregisterScreen(String screenName);
-	void createProcessScreen(String processName);
+	void registerScreen(std::shared_ptr<BaseScreen> screenRef);
+	void switchToScreen(String screenName);
+	void unregisterScreen(String screenName);
 
-    std::shared_ptr<AConsole> getCurrentConsole();
-    void returnToPreviousConsole();
-    void exitApplication();
-    bool isRunning();
+	void returnToPreviousConsole();
+	bool isRunning() const;
 
-    bool isScreenRegistered(const String& screenName);
+	HANDLE getConsoleHandle() const;
+
+	bool isScreenRegistered(const String& screenName);
 
 private:
-    ConsoleManager();
-    ~ConsoleManager();
-    ConsoleManager(ConsoleManager const&) = delete;
-    static ConsoleManager* sharedInstance;
+	ConsoleManager();
+	~ConsoleManager();
+	ConsoleManager(ConsoleManager const&) {};
+	ConsoleManager& operator=(ConsoleManager const&) {};
+	static ConsoleManager* sharedInstance;
 
-    ConsoleTable consoleTable;
-    std::shared_ptr<AConsole> previousConsole;
-    std::shared_ptr<AConsole> currentConsole;
+	ConsoleTable consoleTable;
+	std::shared_ptr<AConsole> currentConsole;
+	std::shared_ptr<AConsole> previousConsole;
 
-    bool running = true;
+	HANDLE consoleHandle;
+	bool running = true;
 };

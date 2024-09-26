@@ -1,92 +1,134 @@
 #include "ConsoleManager.h"
-#include "MainScreen.h"
-#include <iostream>  
+#include <iostream>
+#include "MainConsole.h"
+#include "TypedefRepo.h"
+#include "utils.h"
 
 ConsoleManager* ConsoleManager::sharedInstance = nullptr;
-
-ConsoleManager* ConsoleManager::getInstance() {
-    if (!sharedInstance) {
-        sharedInstance = new ConsoleManager();
-        sharedInstance->initialize();
-    }
-    return sharedInstance;
+ConsoleManager* ConsoleManager::getInstance()
+{
+	return sharedInstance;
 }
 
-void ConsoleManager::initialize() {
-    sharedInstance = new ConsoleManager(); 
-    std::shared_ptr<BaseScreen> mainScreen = std::make_shared<MainScreen>();
-    sharedInstance->registerScreen(mainScreen); 
-    sharedInstance->currentConsole = mainScreen;
+void ConsoleManager::initialize()
+{
+	sharedInstance = new ConsoleManager();
 }
 
-void ConsoleManager::destroy() {
-    delete sharedInstance;
+void ConsoleManager::destroy()
+{
+	delete sharedInstance;
 }
 
-ConsoleManager::ConsoleManager() : currentConsole(nullptr) {}
-
-ConsoleManager::~ConsoleManager() {}
-
-void ConsoleManager::drawConsole() {
-    if (currentConsole) {
-        currentConsole->display();
-    }
+ConsoleManager::~ConsoleManager()
+{
 }
 
-void ConsoleManager::switchConsole(String consoleName) {
-    auto switchConsole = consoleTable.find(consoleName);
-    if (switchConsole != consoleTable.end()) {
-        previousConsole = currentConsole;
-        currentConsole = switchConsole->second;
-        currentConsole->onEnabled();
-    }
+void ConsoleManager::drawConsole() const
+{
+	if (this->currentConsole != nullptr)
+	{
+		this->currentConsole->display();
+	}
+	else
+	{
+		std::cerr << "No console assigned." << std::endl;
+	}
 }
 
-void ConsoleManager::switchToScreen(String screenName) {
-    if (isScreenRegistered(screenName)) {
-        system("cls");
-        previousConsole = currentConsole; 
-        currentConsole = consoleTable[screenName];  
-        currentConsole->onEnabled();  
-    }
-    else {
-        std::cout << "Screen does not exist, create one first." << std::endl;
-    }
+void ConsoleManager::process() const
+{
+	if (this->currentConsole != nullptr)
+	{
+		this->currentConsole->process();
+	}
+	else
+	{
+		std::cerr << "No console assigned." << std::endl;
+	}
 }
 
-void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef) {
-    consoleTable[screenRef->getName()] = screenRef;
+void ConsoleManager::switchConsole(String consoleName)
+{
+	printMsgNewLine("Switching to console: " + consoleName);
+	if (this->consoleTable.contains(consoleName))
+	{
+		system("cls");
+		this->previousConsole = this->currentConsole;
+		this->currentConsole = this->consoleTable[consoleName];
+		this->currentConsole->onEnabled();
+	}
+	else
+	{
+		std::cerr << "Console not found." << std::endl;
+	}
 }
 
-void ConsoleManager::unregisterScreen(String screenName) {
-    consoleTable.erase(screenName);
+void ConsoleManager::registerScreen(std::shared_ptr<BaseScreen> screenRef)
+{
+	if (this->consoleTable.contains(screenRef->getName()))
+	{
+		std::cerr << "Screen already registered." << std::endl;
+		return;
+	}
+	this->consoleTable[screenRef->getName()] = screenRef;
+}
+
+void ConsoleManager::switchToScreen(String screenName)
+{
+	if (this->consoleTable.contains(screenName))
+	{
+		system("cls");
+		this->previousConsole = this->currentConsole;
+		this->currentConsole = this->consoleTable[screenName];
+		this->currentConsole->onEnabled();
+	}
+	else
+	{
+		std::cerr << "Screen not found." << std::endl;
+	}
+}
+
+void ConsoleManager::unregisterScreen(String screenName)
+{
+	if (this->consoleTable.contains(screenName))
+	{
+		this->consoleTable.erase(screenName);
+	}
+	else
+	{
+		std::cerr << "Screen not found." << std::endl;
+	}
+}
+
+ConsoleManager::ConsoleManager()
+{
+	this->running = true;
+	this->consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	const std::shared_ptr<MainConsole> mainConsole = std::make_shared<MainConsole>();
+	this->consoleTable[MAIN_CONSOLE] = mainConsole;
+
+	this->switchConsole(MAIN_CONSOLE);
+}
+
+bool ConsoleManager::isScreenRegistered(const String& screenName) {
+	return consoleTable.find(screenName) != consoleTable.end();
 }
 
 void ConsoleManager::returnToPreviousConsole() {
-    if (previousConsole) {
-        currentConsole = previousConsole;
-        previousConsole = nullptr;
-        system("cls");
-        currentConsole->onExecute();
-    }
-    else {
-        std::cerr << "No previous screen to return to." << std::endl;
-    }
+	if (previousConsole) {
+		currentConsole = previousConsole;
+		previousConsole = nullptr;
+		system("cls");
+		currentConsole->display();
+	}
+	else {
+		std::cerr << "No previous screen to return to." << std::endl;
+	}
 }
 
-void ConsoleManager::createProcessScreen(String processName) {
-    auto processScreen = std::make_shared<BaseScreen>(processName, std::make_shared<String>(processName));
-
-    registerScreen(processScreen);  
-
-    switchToScreen(processScreen->getName());
-}
-
-
-bool ConsoleManager::isScreenRegistered(const String& screenName) {
-    return consoleTable.find(screenName) != consoleTable.end();
-}
-
-std::shared_ptr<AConsole> ConsoleManager::getCurrentConsole() {
-    return currentConsole; 
+bool ConsoleManager::isRunning() const
+{
+	return this->running;
 }

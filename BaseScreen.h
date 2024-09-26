@@ -1,19 +1,20 @@
 #pragma once
 #include "AConsole.h"
+#include "TypedefRepo.h"
+#include "Process.h"
 #include <memory>
 
-class BaseScreen : public AConsole {
+class BaseScreen : public AConsole
+{
 public:
-    BaseScreen(String processName, std::shared_ptr<String> attachedProcess);
-    void onEnabled() override;
-    void process() override;
-    void display() override;
-    void onExecute() override {};
-    void exitScreen();
+	BaseScreen(std::shared_ptr<Process> process, String processName);
+
+	void onEnabled() override;
+	void display() override;
+	void process() override;
 
 private:
-    void printProcessInfo();
-    std::shared_ptr<String> attachedProcess;
-    bool refreshed = false;
-    void handleCommand(String command);
+	void printProcessInfo() const;
+	std::shared_ptr<Process> attachedProcess;
+	bool refreshed = false;
 };
