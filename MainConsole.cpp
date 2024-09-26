@@ -70,6 +70,7 @@ void MainConsole::handleCommand(String command)
     else if (command == "clear" || command == "cls")
     {
         system("cls");
+        displayHeader();
     }
 
     else if (command.substr(0, 6) == "screen")

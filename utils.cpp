@@ -32,6 +32,7 @@ void printMsg(std::string msg) {
 void printHeader(std::string headerFile) {
     printAscii(headerFile);
     printMsgNewLine("Hello, Welcome to CSOPESY commandline!");
+    printMsgNewLine("Type 'exit' to quit, 'clear' to clear the screen");
 }
 
 std::string toLowerCase(std::string str) {
