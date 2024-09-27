@@ -6,6 +6,13 @@
 BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName) : AConsole(processName)
 {
 	this->attachedProcess = process;
+
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	std::tm timeInfo;
+	localtime_s(&timeInfo, &currentTime);
+	char buffer[100];
+	std::strftime(buffer, sizeof(buffer), "%m/%d/%Y %I:%M:%S%p", &timeInfo);
+	this->screenCreationTime = buffer;
 }
 
 void BaseScreen::onEnabled()
@@ -52,13 +59,10 @@ void BaseScreen::display()
 
 void BaseScreen::printProcessInfo() const
 {
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	std::tm localTime;
-	localtime_s(&localTime, &currentTime);
 
 	std::cout << "Process Name: " << name << std::endl;
 	std::cout << "Instruction Line: 0 / 100" << std::endl;
 	std::cout << "Screen Created At: "
-		<< std::put_time(&localTime, "%m/%d/%Y, %I:%M:%S %p") << std::endl;
+		<< this->screenCreationTime << std::endl;
 
 }

@@ -16,5 +16,6 @@ public:
 private:
 	void printProcessInfo() const;
 	std::shared_ptr<Process> attachedProcess;
+	String screenCreationTime;
 	bool refreshed = false;
 };
