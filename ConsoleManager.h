@@ -29,6 +29,8 @@ public:
 	void returnToPreviousConsole();
 	bool isRunning() const;
 
+	void stopRunning();
+
 	HANDLE getConsoleHandle() const;
 
 	bool isScreenRegistered(const String& screenName);

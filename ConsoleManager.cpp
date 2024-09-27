@@ -121,12 +121,18 @@ void ConsoleManager::returnToPreviousConsole() {
 		currentConsole = previousConsole;
 		previousConsole = nullptr;
 		system("cls");
-		currentConsole->display();
+		currentConsole->onEnabled();
 	}
 	else {
 		std::cerr << "No previous screen to return to." << std::endl;
 	}
 }
+
+void ConsoleManager::stopRunning()
+{
+	this->running = false;
+}
+
 
 bool ConsoleManager::isRunning() const
 {

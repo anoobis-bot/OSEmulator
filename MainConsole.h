@@ -8,11 +8,13 @@ public:
 	MainConsole();
 	~MainConsole() = default;
 
-	void onEnabled();
-	void display();
-	void process();
+	void onEnabled() override;
+	void display() override;
+	void process() override;
 
 private:
 	void displayHeader();
-	void handleCommand(String command);
+	bool handleCommand(String command);
+
+	String ACTION;
 };

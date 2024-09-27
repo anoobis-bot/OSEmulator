@@ -8,13 +8,13 @@ int main()
 	ConsoleManager::initialize();
 
 	bool running = true;
-	while (running)
+	while (ConsoleManager::getInstance()->isRunning())
 	{
 		ConsoleManager::getInstance()->process();
 		ConsoleManager::getInstance()->drawConsole();
-		running = ConsoleManager::getInstance()->isRunning();
-	}
 
+	}
 	ConsoleManager::destroy();
+	std::cout << "Exiting the program...";
 	return 0;
 }

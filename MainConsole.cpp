@@ -10,29 +10,32 @@
 #include <sstream>
 #include <memory>
 
-extern ConsoleManager consoleManager;
-
 MainConsole::MainConsole() : AConsole("MAIN_CONSOLE")
 {
 }
 
 void MainConsole::display() {
-    displayHeader();
-    process();
+    if (ACTION == "CLEAR")
+    {
+        system("cls");
+        displayHeader();
+        ACTION = "";
+    }
 }
 
 void MainConsole::onEnabled()
 {
-    displayHeader();
+    ACTION = "CLEAR";
+    this->display();
 }
 
 void MainConsole::process() {
+    bool handled = false;
     String command;
-    while (true) {
+    while (!handled) {
         std::cout << "root:\\> ";
         std::getline(std::cin, command);
-        handleCommand(command);
-        std::cout << std::endl;
+        handled = handleCommand(command);
     }
 }
 
@@ -51,20 +54,18 @@ std::pair<String, String> parseScreenCommand(String userInput) {
     return { command, name };
 }
 
-void MainConsole::handleCommand(String command)
+bool MainConsole::handleCommand(String command)
 {
+    bool handled = true;
     String formattedInput = toLowerCase(command);
-    auto consoleManager = ConsoleManager::getInstance();
+    ConsoleManager* consoleManager = ConsoleManager::getInstance();
     if (command == "exit")
     {
-        std::cout << "Exiting the program..." << std::endl;
-        exit(0);
-        std::terminate();
-
+        consoleManager->stopRunning();
     }
     else if (command == "initialize")
     {
-        printMsg("initialize command recognized. Doing something");
+        printMsgNewLine("initialize command recognized. Doing something");
     }
 
     else if (command == "clear" || command == "cls")
@@ -80,6 +81,7 @@ void MainConsole::handleCommand(String command)
         if (screenCommand.empty() || processName.empty())
         {
             printMsgNewLine("Incomplete arguments. Use 'screen -s <name>' or 'screen -r <name>'.");
+            handled = false;
         }
         else if (screenCommand == "-s")
         {
@@ -94,6 +96,7 @@ void MainConsole::handleCommand(String command)
             else
             {
                 std::cout << "Process '" << processName << "' already exists or has existed. Please provide a different name." << std::endl;
+                handled = false;
             }
         }
         else if (screenCommand == "-r")
@@ -101,6 +104,7 @@ void MainConsole::handleCommand(String command)
             if (!consoleManager->isScreenRegistered(processName))
             {
                 std::cout << "Process '" << processName << "' not found." << std::endl;
+                handled = false;
             }
             else
             {
@@ -110,6 +114,7 @@ void MainConsole::handleCommand(String command)
         else
         {
             printMsgNewLine("Incomplete arguments. Use 'screen -s <name>' or 'screen -r <name>'.");
+            handled = false;
         }
     }
 
@@ -128,5 +133,8 @@ void MainConsole::handleCommand(String command)
     else
     {
         std::cout << "Invalid command. Please try again." << std::endl;
+        handled = false;
     }
+
+    return handled;
 }
