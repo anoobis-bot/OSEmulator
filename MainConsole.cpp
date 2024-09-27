@@ -120,15 +120,15 @@ bool MainConsole::handleCommand(String command)
 
     else if (command == "scheduler-test")
     {
-        printMsg("scheduler-test command recognized. Doing something");
+        printMsgNewLine("scheduler-test command recognized. Doing something");
     }
     else if (command == "scheduler-stop")
     {
-        printMsg("scheduler-stop command recognized. Doing something");
+        printMsgNewLine("scheduler-stop command recognized. Doing something");
     }
     else if (command == "report-util")
     {
-        printMsg("report-util command recognized. Doing something");
+        printMsgNewLine("report-util command recognized. Doing something");
     }
     else
     {
