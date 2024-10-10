@@ -10,6 +10,8 @@
 #include <sstream>
 #include <memory>
 
+#include "Scheduler.h"
+
 extern ConsoleManager consoleManager;
 
 MainConsole::MainConsole() : AConsole("MAIN_CONSOLE")
@@ -88,6 +90,9 @@ void MainConsole::handleCommand(String command)
                 // Register new process and switch to the screen
                 auto process = std::make_shared<Process>();
                 auto processScreen = std::make_shared<BaseScreen>(process, processName);
+
+                Scheduler::getInstance()->addProcess(process);
+
                 consoleManager->registerScreen(processScreen);
                 consoleManager->switchToScreen(processName);
             }
@@ -124,6 +129,11 @@ void MainConsole::handleCommand(String command)
     else if (command == "report-util")
     {
         printMsg("report-util command recognized. Doing something");
+    }
+    else if (command == "debug-info")
+    {
+        std::cout << "Size of Ready Queue: " << Scheduler::getInstance()->getSize() << '\n';
+        std::cout << "Number of cores: " << Scheduler::getInstance()->numCores() << '\n';
     }
     else
     {

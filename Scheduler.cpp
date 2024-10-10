@@ -1,13 +1,31 @@
 #include "Scheduler.h"
 
-Scheduler& Scheduler::getInstance(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration) {
+Scheduler* Scheduler::sharedInstance = nullptr;
+std::mutex Scheduler::mtx;
+
+void Scheduler::initialize(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration) {
     if (!sharedInstance)
     {
         sharedInstance = new Scheduler(scheduleAlgo, numCores, tickDuration);
     }
-
-    return *sharedInstance;
 }
+
+// debugging
+int Scheduler::getSize()
+{
+    return this->readyQueue.size();
+}
+int Scheduler::numCores()
+{
+    return this->cores.size();
+}
+// ---- end of debugging methods
+
+Scheduler* Scheduler::getInstance()
+{
+    return sharedInstance;
+}
+
 
 Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration) : isRunning(true)
 {
@@ -18,18 +36,30 @@ Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration) 
     }
 
     this->scheduleAlgo = scheduleAlgo;
+    this->tickDuration = tickDuration;
 
     // Start the thread in the constructor
     this->workerThread = std::thread(&Scheduler::run, this);
-    this->workerThread.detach(); // Detach the thread to run independently
+    this->workerThread.detach();
 }
 
 void Scheduler::run()
 {
-	if (this->scheduleAlgo == Scheduler::FCFS)
-	{
-		
-	}
+    while (true)
+    {
+        if (this->scheduleAlgo == FCFS)
+        {
+            // sort the ready queue
+
+            // check each core if tapos na yung process
+            // change the state of the process accordingly
+
+            // assign a process to an available core
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(this->tickDuration));
+    }
+
 }
 
 //Scheduler::~Scheduler() {
@@ -42,6 +72,7 @@ void Scheduler::run()
 //}
 
 void Scheduler::addProcess(std::shared_ptr<Process> process) {
+    std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
     this->readyQueue.push_back(process);
 }
 
@@ -83,20 +114,20 @@ int Scheduler::getCoreId() {
     return coreId++ % 4;   // Assuming 4 cores (0, 1, 2, 3)
 }
 
-void Scheduler::printProcesses() {
-    std::cout << "----------------------------------------------" << std::endl;
-    std::cout << "Running processes:" << std::endl;
-
-    for (const auto& process : processes) {
-        std::string state = process->getState(); // Not Complete
-        std::cout << process->getName() << "\t(" << getCurrentTime() << ")\t\tCore: " << getCoreId() << "\t\t" << process->getCommandsExecuted() << "/100" << std::endl;
-    }
-
-    std::cout << "\nFinished processes:" << std::endl;
-    for (const auto& process : processes) {
-        if (process->getState() == "finished") {    // Not Complete
-            std::cout << process->getName() << "\t(" << getCurrentTime() << ")\t\tFinished\t100/100" << std::endl;
-        }
-    }
-    std::cout << "----------------------------------------------" << std::endl;
-}
+//void Scheduler::printProcesses() {
+//    std::cout << "----------------------------------------------" << std::endl;
+//    std::cout << "Running processes:" << std::endl;
+//
+//    for (const auto& process : processes) {
+//        std::string state = process->getState(); // Not Complete
+//        std::cout << process->getName() << "\t(" << getCurrentTime() << ")\t\tCore: " << getCoreId() << "\t\t" << process->getCommandsExecuted() << "/100" << std::endl;
+//    }
+//
+//    std::cout << "\nFinished processes:" << std::endl;
+//    for (const auto& process : processes) {
+//        if (process->getState() == "finished") {    // Not Complete
+//            std::cout << process->getName() << "\t(" << getCurrentTime() << ")\t\tFinished\t100/100" << std::endl;
+//        }
+//    }
+//    std::cout << "----------------------------------------------" << std::endl;
+//}

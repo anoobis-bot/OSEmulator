@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <mutex>
 #include <sstream>
 #include "Process.h"
 #include "Core.h"
@@ -19,12 +20,18 @@ public:
         FCFS
     };
 
-	static Scheduler& getInstance(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration);
+	static void initialize(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration);
+
+    static Scheduler* getInstance();
 
     void run();
     void addProcess(std::shared_ptr<Process> process);
     void startScheduling();
     void printProcesses();
+
+    // debugging delete later
+    int getSize();
+    int numCores();
 
 private:
     Scheduler(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration);
@@ -38,11 +45,16 @@ private:
 
     std::vector<Core> cores;
 
+    int tickDuration;
+
     static Scheduler* sharedInstance;
     std::thread workerThread;
 
     std::vector<std::shared_ptr<Process>> readyQueue;
     std::vector<std::thread> threads;
+
+    static std::mutex mtx;
+
     bool isRunning;
     void runProcess(std::shared_ptr<Process> process);
     std::string getCurrentTime(); // Get the current time
