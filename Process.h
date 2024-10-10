@@ -11,9 +11,14 @@ public:
 	int getTotalInstructions() const;
 	String getCreationTime() const;
 
+	void run();
+
 private:
 	String processName;
 	std::chrono::system_clock::time_point creationTime;
 	int currentInstruction;
 	int totalInstructions;
+
+	String printStatement;
+	
 };

@@ -5,6 +5,11 @@ Process::Process()
 {
 }
 
+void Process::run()
+{
+	
+}
+
 std::string Process::getName() const {
 	return processName;
 }
