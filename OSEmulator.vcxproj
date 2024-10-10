@@ -131,6 +131,7 @@
     <ClCompile Include="AConsole.cpp" />
     <ClCompile Include="BaseScreen.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
+    <ClCompile Include="Core.cpp" />
     <ClCompile Include="MainConsole.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Process.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="AConsole.h" />
     <ClInclude Include="BaseScreen.h" />
     <ClInclude Include="ConsoleManager.h" />
+    <ClInclude Include="Core.h" />
     <ClInclude Include="MainConsole.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="Scheduler.h" />
