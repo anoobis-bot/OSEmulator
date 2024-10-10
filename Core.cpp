@@ -14,6 +14,15 @@ void Core::attachProcess(Process* process)
 
 void Core::run()
 {
-	this->attachedProcess->run();
+	while(true)
+	{
+		if (!attachedProcess)
+		{
+			this->attachedProcess->run();
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(tickDuration));
+	}
+
 }
 
