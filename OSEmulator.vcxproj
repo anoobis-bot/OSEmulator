@@ -134,6 +134,7 @@
     <ClCompile Include="MainConsole.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Process.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +143,7 @@
     <ClInclude Include="ConsoleManager.h" />
     <ClInclude Include="MainConsole.h" />
     <ClInclude Include="Process.h" />
+    <ClInclude Include="Scheduler.h" />
     <ClInclude Include="TypedefRepo.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
