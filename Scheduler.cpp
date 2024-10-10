@@ -1,5 +1,7 @@
 #include "Scheduler.h"
 
+#include <memory>
+
 Scheduler* Scheduler::sharedInstance = nullptr;
 std::mutex Scheduler::mtx;
 
@@ -19,6 +21,14 @@ int Scheduler::numCores()
 {
     return this->cores.size();
 }
+void Scheduler::printProcesses()
+{
+	for (std::shared_ptr<Process> process : readyQueue)
+	{
+        std::cout << process->getName() << '\n';
+	}
+}
+
 // ---- end of debugging methods
 
 Scheduler* Scheduler::getInstance()
@@ -41,6 +51,21 @@ Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration) 
     // Start the thread in the constructor
     this->workerThread = std::thread(&Scheduler::run, this);
     this->workerThread.detach();
+
+    //debugging
+    //this->addProcess(std::make_shared<Process>("process1000", 24));
+}
+
+void Scheduler::firstComeFirstServe()
+{
+    // sort the ready queue
+    this->sortReadyQueue();
+
+	// check each core if tapos na yung process
+
+	// change the state of the process accordingly
+
+	// assign a process to an available core
 }
 
 void Scheduler::run()
@@ -49,12 +74,7 @@ void Scheduler::run()
     {
         if (this->scheduleAlgo == FCFS)
         {
-            // sort the ready queue
-
-            // check each core if tapos na yung process
-            // change the state of the process accordingly
-
-            // assign a process to an available core
+            firstComeFirstServe();
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(this->tickDuration));
@@ -74,6 +94,14 @@ void Scheduler::run()
 void Scheduler::addProcess(std::shared_ptr<Process> process) {
     std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
     this->readyQueue.push_back(process);
+}
+
+void Scheduler::sortReadyQueue()
+{
+    std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
+    std::sort(this->readyQueue.begin(), this->readyQueue.end(), [](std::shared_ptr<Process> a, std::shared_ptr<Process> b) {
+        return a->getCreationTime() < b->getCreationTime();
+    });
 }
 
 //void Scheduler::startScheduling() {

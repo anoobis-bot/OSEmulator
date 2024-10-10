@@ -88,7 +88,7 @@ void MainConsole::handleCommand(String command)
             if (!consoleManager->isScreenRegistered(processName))
             {
                 // Register new process and switch to the screen
-                auto process = std::make_shared<Process>();
+                auto process = std::make_shared<Process>(processName);
                 auto processScreen = std::make_shared<BaseScreen>(process, processName);
 
                 Scheduler::getInstance()->addProcess(process);
@@ -134,6 +134,8 @@ void MainConsole::handleCommand(String command)
     {
         std::cout << "Size of Ready Queue: " << Scheduler::getInstance()->getSize() << '\n';
         std::cout << "Number of cores: " << Scheduler::getInstance()->numCores() << '\n';
+        std::cout << "Process List: \n";
+        Scheduler::getInstance()->printProcesses();
     }
     else
     {

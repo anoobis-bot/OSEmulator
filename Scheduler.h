@@ -12,6 +12,7 @@
 #include <sstream>
 #include "Process.h"
 #include "Core.h"
+#include <algorithm>
 
 class Scheduler {
 public:
@@ -54,6 +55,10 @@ private:
     std::vector<std::thread> threads;
 
     static std::mutex mtx;
+
+    void firstComeFirstServe();
+
+    void sortReadyQueue();
 
     bool isRunning;
     void runProcess(std::shared_ptr<Process> process);

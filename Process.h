@@ -5,11 +5,13 @@
 class Process
 {
 public:
-	Process();
+	Process(String processName);
+	//Process(String processName, int hours);
 	String getName() const;
 	int getCurrentInstruction() const;
 	int getTotalInstructions() const;
-	String getCreationTime() const;
+	//String getCreationTime() const;
+	std::chrono::system_clock::time_point getCreationTime() const;
 
 	void run();
 
