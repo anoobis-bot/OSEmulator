@@ -138,7 +138,8 @@ void MainConsole::handleCommand(String command)
             if (!consoleManager->isScreenRegistered(processName))
             {
                 // Register new process and switch to the screen
-                auto process = std::make_shared<Process>(processName, Scheduler::getInstance()->getAllProcess().size(), 100, PrintCommand());
+                String toPrint = "Hello world from " + processName;
+                auto process = std::make_shared<Process>(processName, Scheduler::getInstance()->getAllProcess().size(), 100, PrintCommand(toPrint));
                 auto processScreen = std::make_shared<BaseScreen>(process, processName);
 
                 Scheduler::getInstance()->addNewProcess(process);

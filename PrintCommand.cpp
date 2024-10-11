@@ -1,13 +1,18 @@
 #include "PrintCommand.h"
+#include "iostream"
 
-PrintCommand::PrintCommand()
+PrintCommand::PrintCommand(String& toPrint)
 {
+	this->toPrint = toPrint;
 }
 
 void PrintCommand::run()
 {
-	// do something
-	return;
+	// std::cout << this->toPrint << std::endl;
+}
+
+String PrintCommand::getToPrint() {
+	return this->toPrint;
 }
 
 

@@ -3,7 +3,7 @@
 
 #include "PrintCommand.h"
 
-Process::Process(String processName, int id, int totalInstructions ,PrintCommand command) : creationTime(std::chrono::system_clock::now())
+Process::Process(String processName, int id, int totalInstructions ,PrintCommand command) : creationTime(std::chrono::system_clock::now()), command(command)
 {
 	this->processName = processName;
 	this->processState = READY;
@@ -12,6 +12,8 @@ Process::Process(String processName, int id, int totalInstructions ,PrintCommand
 	this->command = command;
 	this->totalInstructions = totalInstructions;
 	this->currentInstruction = 0;
+
+	this->openLogFile();
 }
 
 void Process::run()
@@ -19,10 +21,13 @@ void Process::run()
 	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the processState
 	// print something
 	this->command.run();
+	this->logPrintCommand(this->command.getToPrint());
+	
 	this->currentInstruction = currentInstruction + 1;
 	if (currentInstruction >= totalInstructions)
 	{
 		this->processState = FINISHED;
+		this->closeLogFile();
 	}
 }
 
@@ -106,4 +111,8 @@ void Process::logPrintCommand(const std::string& command) {
 	char timeBuffer[25];
 	std::strftime(timeBuffer, sizeof(timeBuffer), "%m/%d/%Y %I:%M:%S%p", &timeInfo);
 	logFile << "(" << timeBuffer << ") Core: " << inCoreID << " \"" << command << "\"\n";
+}
+
+void Process::closeLogFile() {
+	logFile.close();
 }

@@ -35,6 +35,7 @@ public:
 	int getCoreID();
 	void openLogFile();
 	void logPrintCommand(const std::string& command);
+	void closeLogFile();
 
 private:
 	String processName;
