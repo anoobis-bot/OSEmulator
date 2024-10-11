@@ -84,6 +84,8 @@ void MainConsole::handleCommand(String command)
         {
             printMsgNewLine("Incomplete arguments. Use 'screen -s <name>' or 'screen -r <name>'.");
         }
+#include <iomanip> // Include this header for std::setw and std::left
+
         else if (screenCommand == "-ls")
         {
             std::cout << "---------------------------------------" << '\n';
@@ -95,41 +97,39 @@ void MainConsole::handleCommand(String command)
             }
             else
             {
-                bool hasProcesses = false; // To track if any processes are displayed
-
                 std::cout << "Running Processes:\n";
+             
                 for (const std::shared_ptr<Process>& process : allProcesses)
                 {
-                    if (process->getState() != Process::FINISHED) // Check if process is not finished
+                    if (process->getState() != Process::FINISHED)
                     {
-                        std::cout << process->getName() << '\t'
-                            << process->getFormattedTime() << '\t'
+                        std::cout << std::left << std::setw(25) << process->getName()  // Left align for process name
+                            << std::setw(30) << process->getFormattedTime()
                             << "Core: " << process->getCoreID() << '\t'
-                            << process->getCurrentInstruction() << "/"
+                            << '\t' << process->getCurrentInstruction() << "/"
                             << process->getTotalInstructions() << '\n';
-                        hasProcesses = true; // Mark that we have displayed at least one process
                     }
                 }
+                
+                std::cout << "\nFinished Processes:\n";
 
-                if (hasProcesses) // Only print the finished section if there are running processes
+                for (const std::shared_ptr<Process>& process : allProcesses)
                 {
-                    std::cout << "\nFinished Processes:\n";
-                    for (const std::shared_ptr<Process>& process : allProcesses)
+                    if (process->getState() == Process::FINISHED) 
                     {
-                        if (process->getState() == Process::FINISHED) // Check if process is finished
-                        {
-                            std::cout << process->getName() << '\t'
-                                << process->getFormattedTime() << '\t'
-                                << "Core: " << process->getCoreID() << '\t'
-                                << process->getTotalInstructions() << "/"
-                                << process->getTotalInstructions() << '\n';
-                        }
+                        std::cout << std::left << std::setw(25) << process->getName() 
+                            << std::setw(30) << process->getFormattedTime()
+                            << "FINISHED" << '\t'
+                            << '\t' << process->getCurrentInstruction() << "/"
+                            << process->getTotalInstructions() << '\n';
                     }
                 }
+                
             }
 
             std::cout << "---------------------------------------" << '\n';
         }
+
 
         else if (processName.empty())
         {
