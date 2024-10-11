@@ -19,16 +19,8 @@ void Process::run()
 	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the processState
 	// print something
 	this->command.run();
-
-	for (int i = 0; i < totalInstructions; ++i) {
-		printCommands.push_back("Hello World from " + processName);
-	}
-
-	if (currentInstruction < totalInstructions) {
-		this->currentInstruction = currentInstruction + 1;
-	}
-
-	if (currentInstruction == totalInstructions)
+	this->currentInstruction = currentInstruction + 1;
+	if (currentInstruction >= totalInstructions)
 	{
 		this->processState = FINISHED;
 	}
