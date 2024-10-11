@@ -2,12 +2,13 @@
 #include <chrono>
 #include <mutex>
 
+#include "PrintCommand.h"
 #include "TypedefRepo.h"
 
 class Process
 {
 public:
-	Process(String processName);
+	Process(String processName, int totalInstructions, PrintCommand command);
 	//Process(String processName, int hours);
 	String getName() const;
 	int getCurrentInstruction() const;
@@ -27,6 +28,8 @@ public:
 
 	state getState();
 
+	void readyState();
+	void runningState();
 	void finishState();
 
 	void setCoreID(int coreID);
@@ -44,5 +47,7 @@ private:
 	int inCoreID;
 
 	std::mutex mtx;
+
+	PrintCommand command;
 	
 };

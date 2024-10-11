@@ -71,9 +71,14 @@ void Scheduler::firstComeFirstServe()
             {
                 // returning the process to the ready queue
                 this->addProcess(core->getAttachedProcess());
+                if (core->getAttachedProcess()->getState() != Process::FINISHED)
+                {
+                    core->getAttachedProcess()->readyState();
+                }
             }
             core->attachProcess(this->getFirstProcess());
             this->getFirstProcess()->setCoreID(core->getCoreID());
+            this->getFirstProcess()->runningState();
             this->removeFirstProcess();
 	    }
     }

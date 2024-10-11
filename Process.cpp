@@ -1,11 +1,16 @@
 #include "Process.h"
 #include <iostream>
 
-Process::Process(String processName) : creationTime(std::chrono::system_clock::now())
+#include "PrintCommand.h"
+
+Process::Process(String processName, int totalInstructions ,PrintCommand command) : creationTime(std::chrono::system_clock::now())
 {
 	this->processName = processName;
 	this->processState = READY;
 	this->inCoreID = -1;
+	this->command = command;
+	this->totalInstructions = totalInstructions;
+	this->currentInstruction = 0;
 }
 //debugging
 //Process::Process(String processName, int hours) : creationTime(std::chrono::system_clock::now() + std::chrono::hours(hours))
@@ -17,7 +22,14 @@ void Process::run()
 {
 	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the processState
 	// print something
-	// TODO print it into text file if finished
+	this->command.run();
+	this->currentInstruction = currentInstruction + 1;
+
+	if (currentInstruction >= totalInstructions)
+	{
+		this->processState = FINISHED;
+	}
+	
 }
 
 void Process::setCoreID(int coreID)
@@ -49,24 +61,31 @@ std::chrono::system_clock::time_point Process::getCreationTime() const
 	return this->creationTime;
 }
 
-//String Process::getFormattedTime()
-//{
-//	std::time_t time = std::chrono::system_clock::to_time_t(this->creationTime);
-//
-//	std::tm* localTime = std::localtime_s(&time);
-//
-//	std::ostringstream oss;
-//	oss << "(" << std::put_time(localTime, "%m/%d/%Y %I:%M:%S%p") << ")";
-//
-//	// Return the formatted time as a string
-//	return oss.str();
-//}
-
 Process::state Process::getState()
 {
 	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
 	return this->processState;
 }
+
+void Process::runningState()
+{
+	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
+	this->processState = RUNNING;
+}
+
+void Process::readyState()
+{
+	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
+	this->processState = READY;
+}
+
+void Process::finishState()
+{
+	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
+	this->processState = FINISHED;
+}
+
+
 
 String Process::getFormattedTime() {
 	auto creationTimeT = std::chrono::system_clock::to_time_t(this->creationTime);

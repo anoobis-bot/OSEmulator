@@ -10,6 +10,7 @@
 #include <sstream>
 #include <memory>
 
+#include "PrintCommand.h"
 #include "Scheduler.h"
 
 extern ConsoleManager consoleManager;
@@ -96,7 +97,7 @@ void MainConsole::handleCommand(String command)
                 for (std::shared_ptr<Process> process : allProcesses)
                 {
                     std::cout << process->getName() << '\t' << process->getFormattedTime() << '\t'
-                        << "Core: " + process->getCoreID() << '\t'
+                        << "Core:" << process->getCoreID() << '\t'
                         << process->getCurrentInstruction() << "/" << process->getTotalInstructions() << '\n';
                 }
             }
@@ -111,7 +112,7 @@ void MainConsole::handleCommand(String command)
             if (!consoleManager->isScreenRegistered(processName))
             {
                 // Register new process and switch to the screen
-                auto process = std::make_shared<Process>(processName);
+                auto process = std::make_shared<Process>(processName, 1000,PrintCommand());
                 auto processScreen = std::make_shared<BaseScreen>(process, processName);
 
                 Scheduler::getInstance()->addProcess(process);
