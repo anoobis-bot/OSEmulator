@@ -105,7 +105,7 @@ void MainConsole::handleCommand(String command)
                     {
                         std::cout << std::left << std::setw(25) << process->getName()  // Left align for process name
                             << std::setw(30) << process->getFormattedTime()
-                            << "Core: " << process->getCoreID() << '\t'
+                            << "Core:" << this->formatNA(process->getCoreID()) << '\t'
                             << '\t' << process->getCurrentInstruction() << "/"
                             << process->getTotalInstructions() << '\n';
                     }
@@ -141,7 +141,7 @@ void MainConsole::handleCommand(String command)
                 auto process = std::make_shared<Process>(processName, Scheduler::getInstance()->getAllProcess().size(), 100, PrintCommand());
                 auto processScreen = std::make_shared<BaseScreen>(process, processName);
 
-                Scheduler::getInstance()->addProcess(process);
+                Scheduler::getInstance()->addNewProcess(process);
 
                 consoleManager->registerScreen(processScreen);
                 consoleManager->switchToScreen(processName);
@@ -191,4 +191,15 @@ void MainConsole::handleCommand(String command)
     {
         std::cout << "Invalid command. Please try again." << std::endl;
     }
+}
+
+String MainConsole::formatNA(int num)
+{
+	if (num == -1)
+	{
+        return "N/A";
+	}
+
+	return std::to_string(num);
+
 }

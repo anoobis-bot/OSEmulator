@@ -52,12 +52,9 @@ bool Core::hasAttachedProcess()
 	return false;
 }
 
-bool Core::isAvailable()
+bool Core::processFinished()
 {
-	if (!this->hasAttachedProcess())
-	{
-		return true;
-	}
+	std::lock_guard<std::mutex> lock(this->mtx);
 	if (this->attachedProcess->getState() == Process::FINISHED)
 	{
 		return true;

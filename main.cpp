@@ -14,7 +14,7 @@ int main()
 	for (int i = 0; i < 10; ++i) {
 		std::string processName = "Process_" + std::to_string(i + 1).substr(0, 2);
 		auto process = std::make_shared<Process>(processName, i, 100, PrintCommand());
-		Scheduler::getInstance()->addProcess(process);
+		Scheduler::getInstance()->addNewProcess(process);
 	}
 
 	bool running = true;

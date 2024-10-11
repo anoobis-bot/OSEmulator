@@ -12,6 +12,8 @@ public:
 	void display();
 	void process();
 
+	String formatNA(int num);
+
 private:
 	void displayHeader();
 	void handleCommand(String command);

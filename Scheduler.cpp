@@ -65,22 +65,20 @@ void Scheduler::firstComeFirstServe()
 	// check each core if tapos na yung process. assign empty cores.
     for (Core* core : cores)
     {
-	    if (core->isAvailable() && !this->readyQueue.empty())
-	    {
-            if (core -> hasAttachedProcess())
-            {
-                // returning the process to the ready queue
-                this->addProcess(core->getAttachedProcess());
-                if (core->getAttachedProcess()->getState() != Process::FINISHED)
-                {
-                    core->getAttachedProcess()->readyState();
-                }
-            }
-            core->attachProcess(this->getFirstProcess());
-            this->getFirstProcess()->setCoreID(core->getCoreID());
-            this->getFirstProcess()->runningState();
-            this->removeFirstProcess();
-	    }
+        if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() != Process::FINISHED)
+        {
+            continue;
+        }
+		if (this->readyQueue.empty())
+		{
+            continue;
+		}
+
+        core->attachProcess(this->getFirstProcess());
+        this->getFirstProcess()->setCoreID(core->getCoreID());
+        this->getFirstProcess()->runningState();
+        this->removeFirstProcess();
+
     }
 }
 
@@ -98,11 +96,28 @@ void Scheduler::run()
 
 }
 
-void Scheduler::addProcess(std::shared_ptr<Process> process) {
+//Scheduler::~Scheduler() {
+//    isRunning = false;
+//    for (auto& thread : threads) {
+//        if (thread.joinable()) {
+//            thread.join();
+//        }
+//    }
+//}
+
+void Scheduler::addNewProcess(std::shared_ptr<Process> process)
+{
     std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
     this->readyQueue.push_back(process);
     this->allProcesses.push_back(process);
 }
+
+void Scheduler::reAddProcess(std::shared_ptr<Process> process)
+{
+    std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
+    this->readyQueue.push_back(process);
+}
+
 
 std::shared_ptr<Process> Scheduler::getFirstProcess()
 {

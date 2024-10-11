@@ -23,7 +23,8 @@ public:
     static Scheduler* getInstance();
 
     void run();
-    void addProcess(std::shared_ptr<Process> process);
+    void addNewProcess(std::shared_ptr<Process> process);
+    void reAddProcess(std::shared_ptr<Process> process);
     std::shared_ptr<Process> getFirstProcess();
     void removeFirstProcess();
     void startScheduling();
