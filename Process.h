@@ -1,5 +1,7 @@
 #pragma once
 #include <chrono>
+#include <mutex>
+
 #include "TypedefRepo.h"
 
 class Process
@@ -15,6 +17,17 @@ public:
 
 	void run();
 
+	enum state
+	{
+		READY,
+		RUNNING,
+		FINISHED
+	};
+
+	state getState();
+
+	void finishState();
+
 private:
 	String processName;
 	std::chrono::system_clock::time_point creationTime;
@@ -22,5 +35,9 @@ private:
 	int totalInstructions;
 
 	String printStatement;
+
+	state processState;
+
+	static std::mutex mtx;
 	
 };
