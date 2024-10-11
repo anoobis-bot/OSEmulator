@@ -7,7 +7,7 @@
 int main()
 {
 	ConsoleManager::initialize();
-	Scheduler::initialize(Scheduler::FCFS, 2, 300);
+	Scheduler::initialize(Scheduler::FCFS, 4, 300);
 
 	bool running = true;
 	while (running)

@@ -38,10 +38,11 @@ Scheduler* Scheduler::getInstance()
 
 Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration) : isRunning(true)
 {
+    
     // initialize the cores
     for (int i = 0; i < numCores; i++)
     {
-        this->cores.emplace_back(tickDuration, i);
+        this->cores.push_back(new Core(tickDuration, i));
     }
 
     this->scheduleAlgo = scheduleAlgo;
@@ -60,14 +61,18 @@ void Scheduler::firstComeFirstServe()
     // sort the ready queue
     this->sortReadyQueue();
 
-    // TODO check error here
+    
 	// check each core if tapos na yung process. assign empty cores.
-    for (Core core : cores)
+    for (Core* core : cores)
     {
-	    if (core.isAvailable())
+	    if (core->isAvailable() && !this->readyQueue.empty())
 	    {
-	    	this->addProcess(core.getAttachedProcess());
-            core.attachProcess(this->getFirstProcess());
+            if (core -> hasAttachedProcess())
+            {
+                // returning the process to the ready queue
+                this->addProcess(core->getAttachedProcess());
+            }
+            core->attachProcess(this->getFirstProcess());
             this->removeFirstProcess();
 	    }
     }
@@ -104,7 +109,7 @@ void Scheduler::addProcess(std::shared_ptr<Process> process) {
 std::shared_ptr<Process> Scheduler::getFirstProcess()
 {
     std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before accessing the vector
-    return this->readyQueue.front();
+	return this->readyQueue.front();
 }
 
 void Scheduler::removeFirstProcess()

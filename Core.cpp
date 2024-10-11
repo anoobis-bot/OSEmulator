@@ -1,17 +1,15 @@
 #include "Core.h"
 
-std::mutex Core::mtx;
-
-Core::Core(int tickDuration, int coreID) : attachedProcess(nullptr)
+Core::Core(int tickDuration, int coreID) 
 {
 	this->tickDuration = tickDuration;
 	this->coreID = coreID;
+	this->attachedProcess = nullptr;
 	//this->attachedProcess = nullptr;
 
-	// TODO ayos threadding memory exception
 	// Start the thread in the constructor
-	//this->workerThread = std::thread(&Core::run, this);
-	//this->workerThread.detach();
+	this->workerThread = std::thread(&Core::run, this);
+	this->workerThread.detach();
 }
 
 void Core::attachProcess(std::shared_ptr<Process> process)
@@ -45,7 +43,7 @@ void Core::run()
 
 bool Core::hasAttachedProcess()
 {
-	std::lock_guard<std::mutex> lock(mtx);
+	std::lock_guard<std::mutex> lock(this->mtx);
 	if (this->attachedProcess)
 	{
 		return true;
@@ -56,7 +54,6 @@ bool Core::hasAttachedProcess()
 
 bool Core::isAvailable()
 {
-	std::lock_guard<std::mutex> lock(mtx);
 	if (!this->hasAttachedProcess())
 	{
 		return true;

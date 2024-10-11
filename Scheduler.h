@@ -46,7 +46,7 @@ private:
 
     ScheduleAlgo scheduleAlgo;
 
-    std::vector<Core> cores;
+    std::vector<Core*> cores;
 
     int tickDuration;
 

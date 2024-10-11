@@ -14,11 +14,11 @@ public:
 	bool isAvailable();
 
 private:
+	std::mutex mtx;
+
 	int tickDuration;
 	int coreID;
 	std::shared_ptr<Process> attachedProcess;
 	std::thread workerThread;
-
-	static std::mutex mtx;
 };
 
