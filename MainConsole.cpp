@@ -1,3 +1,4 @@
+#pragma once
 #include "MainConsole.h"
 #include "TypedefRepo.h"
 #include "ConsoleManager.h"
@@ -9,7 +10,7 @@
 #include <thread>
 #include <sstream>
 #include <memory>
-
+#include <iomanip>
 #include "PrintCommand.h"
 #include "Scheduler.h"
 
@@ -84,7 +85,6 @@ void MainConsole::handleCommand(String command)
         {
             printMsgNewLine("Incomplete arguments. Use 'screen -s <name>' or 'screen -r <name>'.");
         }
-#include <iomanip> // Include this header for std::setw and std::left
 
         else if (screenCommand == "-ls")
         {
@@ -124,9 +124,7 @@ void MainConsole::handleCommand(String command)
                             << process->getTotalInstructions() << '\n';
                     }
                 }
-                
             }
-
             std::cout << "---------------------------------------" << '\n';
         }
 
@@ -140,7 +138,7 @@ void MainConsole::handleCommand(String command)
             if (!consoleManager->isScreenRegistered(processName))
             {
                 // Register new process and switch to the screen
-                auto process = std::make_shared<Process>(processName, 100,PrintCommand());
+                auto process = std::make_shared<Process>(processName, Scheduler::getInstance()->getAllProcess().size(), 100, PrintCommand());
                 auto processScreen = std::make_shared<BaseScreen>(process, processName);
 
                 Scheduler::getInstance()->addProcess(process);

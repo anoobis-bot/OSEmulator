@@ -4,16 +4,15 @@
 
 #include "PrintCommand.h"
 #include "TypedefRepo.h"
+#include <fstream>
 
 class Process
 {
 public:
-	Process(String processName, int totalInstructions, PrintCommand command);
-	//Process(String processName, int hours);
+	Process(String processName, int id, int totalInstructions, PrintCommand command);
 	String getName() const;
 	int getCurrentInstruction() const;
 	int getTotalInstructions() const;
-	//String getCreationTime() const;
 	std::chrono::system_clock::time_point getCreationTime() const;
 	String getFormattedTime();
 
@@ -34,6 +33,8 @@ public:
 
 	void setCoreID(int coreID);
 	int getCoreID();
+	void openLogFile();
+	void logPrintCommand(const std::string& command);
 
 private:
 	String processName;
@@ -41,9 +42,13 @@ private:
 	int currentInstruction;
 	int totalInstructions;
 
+	std::ofstream logFile;
+	std::vector<std::string> printCommands;
+
 	String printStatement;
 
 	state processState;
+	int id;
 	int inCoreID;
 
 	std::mutex mtx;

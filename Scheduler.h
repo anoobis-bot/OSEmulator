@@ -1,6 +1,3 @@
-#ifndef SCHEDULER_H
-#define SCHEDULER_H
-
 #include <vector>
 #include <thread>
 #include <memory>
@@ -70,5 +67,3 @@ private:
     std::string getCurrentTime(); // Get the current time
     int getCoreId(); // Determine the core being used
 };
-
-#endif // SCHEDULER_H

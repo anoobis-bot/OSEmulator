@@ -3,33 +3,35 @@
 
 #include "PrintCommand.h"
 
-Process::Process(String processName, int totalInstructions ,PrintCommand command) : creationTime(std::chrono::system_clock::now())
+Process::Process(String processName, int id, int totalInstructions ,PrintCommand command) : creationTime(std::chrono::system_clock::now())
 {
 	this->processName = processName;
 	this->processState = READY;
+	this->id = id;
 	this->inCoreID = -1;
 	this->command = command;
 	this->totalInstructions = totalInstructions;
 	this->currentInstruction = 0;
 }
-//debugging
-//Process::Process(String processName, int hours) : creationTime(std::chrono::system_clock::now() + std::chrono::hours(hours))
-//{
-//	this->processName = processName;
-//}
 
 void Process::run()
 {
 	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the processState
 	// print something
 	this->command.run();
-	this->currentInstruction = currentInstruction + 1;
 
-	if (currentInstruction >= totalInstructions)
+	for (int i = 0; i < totalInstructions; ++i) {
+		printCommands.push_back("Hello World from " + processName);
+	}
+
+	if (currentInstruction < totalInstructions) {
+		this->currentInstruction = currentInstruction + 1;
+	}
+
+	if (currentInstruction == totalInstructions)
 	{
 		this->processState = FINISHED;
 	}
-	
 }
 
 void Process::setCoreID(int coreID)
@@ -85,8 +87,6 @@ void Process::finishState()
 	this->processState = FINISHED;
 }
 
-
-
 String Process::getFormattedTime() {
 	auto creationTimeT = std::chrono::system_clock::to_time_t(this->creationTime);
 	struct tm timeinfo;
@@ -94,4 +94,24 @@ String Process::getFormattedTime() {
 	char buffer[100];
 	std::strftime(buffer, sizeof(buffer), "(%m/%d/%Y %I:%M:%S%p)", &timeinfo);
 	return buffer;
+}
+
+void Process::openLogFile() {
+	std::string filename = processName + "_" + std::to_string(id) + ".txt";
+	logFile.open(filename);
+	if (!logFile.is_open()) {
+		std::cerr << "Failed to open log file for Process " << id << ".\n";
+	}
+	else {
+		logFile << "Process: " << processName << "\nLogs:\n\n";
+	}
+}
+
+void Process::logPrintCommand(const std::string& command) {
+	std::time_t timestamp = std::time(nullptr);
+	std::tm timeInfo;
+	localtime_s(&timeInfo, &timestamp);
+	char timeBuffer[25];
+	std::strftime(timeBuffer, sizeof(timeBuffer), "%m/%d/%Y %I:%M:%S%p", &timeInfo);
+	logFile << "(" << timeBuffer << ") Core: " << inCoreID << " \"" << command << "\"\n";
 }
