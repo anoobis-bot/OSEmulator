@@ -14,6 +14,7 @@ public:
 	int getTotalInstructions() const;
 	//String getCreationTime() const;
 	std::chrono::system_clock::time_point getCreationTime() const;
+	String getFormattedTime();
 
 	void run();
 
@@ -28,6 +29,9 @@ public:
 
 	void finishState();
 
+	void setCoreID(int coreID);
+	int getCoreID();
+
 private:
 	String processName;
 	std::chrono::system_clock::time_point creationTime;
@@ -37,7 +41,8 @@ private:
 	String printStatement;
 
 	state processState;
+	int inCoreID;
 
-	static std::mutex mtx;
+	std::mutex mtx;
 	
 };

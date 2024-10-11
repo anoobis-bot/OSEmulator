@@ -79,7 +79,30 @@ void MainConsole::handleCommand(String command)
     {
         auto [screenCommand, processName] = parseScreenCommand(formattedInput);
 
-        if (screenCommand.empty() || processName.empty())
+        if (screenCommand.empty())
+        {
+            printMsgNewLine("Incomplete arguments. Use 'screen -s <name>' or 'screen -r <name>'.");
+        }
+        else if (screenCommand == "-ls")
+        {
+            std::cout << "---------------------------------------" << '\n';
+            std::vector<std::shared_ptr<Process>>& allProcesses = Scheduler::getInstance()->getAllProcess();
+            if (allProcesses.empty())
+            {
+                std::cout << "You currently dont have any processes" << '\n';
+            }
+            else
+            {
+                for (std::shared_ptr<Process> process : allProcesses)
+                {
+                    std::cout << process->getName() << '\t' << process->getFormattedTime() << '\t'
+                        << "Core: " + process->getCoreID() << '\t'
+                        << process->getCurrentInstruction() << "/" << process->getTotalInstructions() << '\n';
+                }
+            }
+            std::cout << "---------------------------------------" << '\n';
+        }
+        else if (processName.empty())
         {
             printMsgNewLine("Incomplete arguments. Use 'screen -s <name>' or 'screen -r <name>'.");
         }

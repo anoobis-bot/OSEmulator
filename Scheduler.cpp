@@ -73,6 +73,7 @@ void Scheduler::firstComeFirstServe()
                 this->addProcess(core->getAttachedProcess());
             }
             core->attachProcess(this->getFirstProcess());
+            this->getFirstProcess()->setCoreID(core->getCoreID());
             this->removeFirstProcess();
 	    }
     }
@@ -104,6 +105,7 @@ void Scheduler::run()
 void Scheduler::addProcess(std::shared_ptr<Process> process) {
     std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
     this->readyQueue.push_back(process);
+    this->allProcesses.push_back(process);
 }
 
 std::shared_ptr<Process> Scheduler::getFirstProcess()
@@ -125,6 +127,12 @@ void Scheduler::sortReadyQueue()
         return a->getCreationTime() < b->getCreationTime();
     });
 }
+
+std::vector<std::shared_ptr<Process>>& Scheduler::getAllProcess()
+{
+    return this->allProcesses;
+}
+
 
 //void Scheduler::startScheduling() {
 //    for (auto& process : processes) {
@@ -159,10 +167,10 @@ void Scheduler::sortReadyQueue()
 //    return oss.str();
 //}
 
-int Scheduler::getCoreId() {
-    static int coreId = 0; // Cycle through cores for simplicity
-    return coreId++ % 4;   // Assuming 4 cores (0, 1, 2, 3)
-}
+//int Scheduler::getCoreId() {
+//    static int coreId = 0; // Cycle through cores for simplicity
+//    return coreId++ % 4;   // Assuming 4 cores (0, 1, 2, 3)
+//}
 
 //void Scheduler::printProcesses() {
 //    std::cout << "----------------------------------------------" << std::endl;

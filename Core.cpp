@@ -66,3 +66,7 @@ bool Core::isAvailable()
 	return false;
 }
 
+int Core::getCoreID()
+{
+	return this->coreID;
+}

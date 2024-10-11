@@ -32,6 +32,8 @@ public:
     void startScheduling();
     void printProcesses();
 
+    std::vector<std::shared_ptr<Process>>& getAllProcess();
+
     // debugging delete later
     int getSize();
     int numCores();
@@ -54,6 +56,7 @@ private:
     std::thread workerThread;
 
     std::vector<std::shared_ptr<Process>> readyQueue;
+    std::vector<std::shared_ptr<Process>> allProcesses;
     std::vector<std::thread> threads;
 
     static std::mutex mtx;

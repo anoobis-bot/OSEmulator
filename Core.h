@@ -13,6 +13,8 @@ public:
 	bool hasAttachedProcess();
 	bool isAvailable();
 
+	int getCoreID();
+
 private:
 	std::mutex mtx;
 
