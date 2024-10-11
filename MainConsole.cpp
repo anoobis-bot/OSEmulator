@@ -88,21 +88,49 @@ void MainConsole::handleCommand(String command)
         {
             std::cout << "---------------------------------------" << '\n';
             std::vector<std::shared_ptr<Process>>& allProcesses = Scheduler::getInstance()->getAllProcess();
+
             if (allProcesses.empty())
             {
-                std::cout << "You currently dont have any processes" << '\n';
+                std::cout << "You currently don't have any processes." << '\n';
             }
             else
             {
-                for (std::shared_ptr<Process> process : allProcesses)
+                bool hasProcesses = false; // To track if any processes are displayed
+
+                std::cout << "Running Processes:\n";
+                for (const std::shared_ptr<Process>& process : allProcesses)
                 {
-                    std::cout << process->getName() << '\t' << process->getFormattedTime() << '\t'
-                        << "Core:" << process->getCoreID() << '\t'
-                        << process->getCurrentInstruction() << "/" << process->getTotalInstructions() << '\n';
+                    if (process->getState() != Process::FINISHED) // Check if process is not finished
+                    {
+                        std::cout << process->getName() << '\t'
+                            << process->getFormattedTime() << '\t'
+                            << "Core: " << process->getCoreID() << '\t'
+                            << process->getCurrentInstruction() << "/"
+                            << process->getTotalInstructions() << '\n';
+                        hasProcesses = true; // Mark that we have displayed at least one process
+                    }
+                }
+
+                if (hasProcesses) // Only print the finished section if there are running processes
+                {
+                    std::cout << "\nFinished Processes:\n";
+                    for (const std::shared_ptr<Process>& process : allProcesses)
+                    {
+                        if (process->getState() == Process::FINISHED) // Check if process is finished
+                        {
+                            std::cout << process->getName() << '\t'
+                                << process->getFormattedTime() << '\t'
+                                << "Core: " << process->getCoreID() << '\t'
+                                << process->getTotalInstructions() << "/"
+                                << process->getTotalInstructions() << '\n';
+                        }
+                    }
                 }
             }
+
             std::cout << "---------------------------------------" << '\n';
         }
+
         else if (processName.empty())
         {
             printMsgNewLine("Incomplete arguments. Use 'screen -s <name>' or 'screen -r <name>'.");
@@ -112,7 +140,7 @@ void MainConsole::handleCommand(String command)
             if (!consoleManager->isScreenRegistered(processName))
             {
                 // Register new process and switch to the screen
-                auto process = std::make_shared<Process>(processName, 1000,PrintCommand());
+                auto process = std::make_shared<Process>(processName, 100,PrintCommand());
                 auto processScreen = std::make_shared<BaseScreen>(process, processName);
 
                 Scheduler::getInstance()->addProcess(process);
