@@ -94,7 +94,7 @@ String Process::getFormattedTime() {
 }
 
 void Process::openLogFile() {
-	std::string filename = processName + "_" + std::to_string(id) + ".txt";
+	std::string filename = processName + ".txt";
 	logFile.open(filename);
 	if (!logFile.is_open()) {
 		std::cerr << "Failed to open log file for Process " << id << ".\n";
