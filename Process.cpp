@@ -1,5 +1,6 @@
 #include "Process.h"
 #include <iostream>
+#include <filesystem> 
 
 #include "PrintCommand.h"
 
@@ -94,7 +95,17 @@ String Process::getFormattedTime() {
 }
 
 void Process::openLogFile() {
-	std::string filename = processName + ".txt";
+
+	const std::string directory = "Process Text"; // directory file
+
+	if (!std::filesystem::exists(directory)) {
+		std::filesystem::create_directory(directory);
+	}
+
+
+	std::string filename = directory + "/" + processName + ".txt";
+
+
 	logFile.open(filename);
 	if (!logFile.is_open()) {
 		std::cerr << "Failed to open log file for Process " << id << ".\n";
