@@ -27,6 +27,8 @@ public:
 
     void run();
     void addProcess(std::shared_ptr<Process> process);
+    std::shared_ptr<Process> getFirstProcess();
+    void removeFirstProcess();
     void startScheduling();
     void printProcesses();
 

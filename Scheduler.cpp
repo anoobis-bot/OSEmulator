@@ -28,7 +28,6 @@ void Scheduler::printProcesses()
         std::cout << process->getName() << '\n';
 	}
 }
-
 // ---- end of debugging methods
 
 Scheduler* Scheduler::getInstance()
@@ -42,7 +41,7 @@ Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration) 
     // initialize the cores
     for (int i = 0; i < numCores; i++)
     {
-        this->cores.emplace_back(tickDuration);
+        this->cores.emplace_back(tickDuration, i);
     }
 
     this->scheduleAlgo = scheduleAlgo;
@@ -61,11 +60,17 @@ void Scheduler::firstComeFirstServe()
     // sort the ready queue
     this->sortReadyQueue();
 
-	// check each core if tapos na yung process
-
-	// change the state of the process accordingly
-
-	// assign a process to an available core
+    // TODO check error here
+	// check each core if tapos na yung process. assign empty cores.
+    for (Core core : cores)
+    {
+	    if (core.isAvailable())
+	    {
+	    	this->addProcess(core.getAttachedProcess());
+            core.attachProcess(this->getFirstProcess());
+            this->removeFirstProcess();
+	    }
+    }
 }
 
 void Scheduler::run()
@@ -94,6 +99,18 @@ void Scheduler::run()
 void Scheduler::addProcess(std::shared_ptr<Process> process) {
     std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
     this->readyQueue.push_back(process);
+}
+
+std::shared_ptr<Process> Scheduler::getFirstProcess()
+{
+    std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before accessing the vector
+    return this->readyQueue.front();
+}
+
+void Scheduler::removeFirstProcess()
+{
+    std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before accessing the vector
+    readyQueue.erase(readyQueue.begin());
 }
 
 void Scheduler::sortReadyQueue()
