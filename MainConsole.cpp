@@ -101,11 +101,11 @@ void MainConsole::handleCommand(String command)
              
                 for (const std::shared_ptr<Process>& process : allProcesses)
                 {
-                    if (process->getState() != Process::FINISHED)
+                    if (process->getCoreID() != -1 && process->getState() != Process::FINISHED)
                     {
-                        std::cout << std::left << std::setw(25) << process->getName()  // Left align for process name
+                        std::cout << std::left << std::setw(25) << process->getName()  
                             << std::setw(30) << process->getFormattedTime()
-                            << "Core:" << this->formatNA(process->getCoreID()) << '\t'
+                            << "Core:" << process->getCoreID() << '\t'
                             << '\t' << process->getCurrentInstruction() << "/"
                             << process->getTotalInstructions() << '\n';
                     }
