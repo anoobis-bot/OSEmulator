@@ -9,7 +9,7 @@
 int main()
 {
 	ConsoleManager::initialize();
-	Scheduler::initialize(Scheduler::FCFS, 4, 300);
+	Scheduler::initialize(FCFS, 5, 4, 300);
 
 	std::cout << "Generating dummy processes please wait. . .\n";
 	for (int i = 0; i < 10; ++i) {

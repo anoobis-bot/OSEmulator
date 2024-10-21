@@ -147,6 +147,7 @@
     <ClInclude Include="MainConsole.h" />
     <ClInclude Include="PrintCommand.h" />
     <ClInclude Include="Process.h" />
+    <ClInclude Include="ScheduleAlgo.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="TypedefRepo.h" />
     <ClInclude Include="utils.h" />

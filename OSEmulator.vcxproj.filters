@@ -80,6 +80,9 @@
     <ClInclude Include="PrintCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScheduleAlgo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="3D_CSOPESY.txt">

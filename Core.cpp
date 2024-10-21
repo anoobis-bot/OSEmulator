@@ -1,14 +1,19 @@
 #include "Core.h"
 
-Core::Core(int tickDuration, int coreID) 
+Core::Core(int tickDuration, int coreID, ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax)
 {
 	this->tickDuration = tickDuration;
 	this->coreID = coreID;
+	this->quantumCycle = 0;
 	this->attachedProcess = nullptr;
 	//this->attachedProcess = nullptr;
 
 	// Start the thread in the constructor
-	this->workerThread = std::thread(&Core::run, this);
+	if (scheduleAlgo == FCFS)
+	{
+		this->workerThread = std::thread(&Core::runFCFS, this);
+	}
+	
 	this->workerThread.detach();
 }
 
@@ -24,7 +29,7 @@ std::shared_ptr<Process> Core::getAttachedProcess()
 
 
 
-void Core::run()
+void Core::runFCFS()
 {
 	while(true)
 	{

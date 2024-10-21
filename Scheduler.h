@@ -11,14 +11,12 @@
 #include "Core.h"
 #include <algorithm>
 
+#include "ScheduleAlgo.h"
+
 class Scheduler {
 public:
-    enum ScheduleAlgo
-    {
-        FCFS
-    };
 
-	static void initialize(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration);
+	static void initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax,int numCores, int tickDuration);
 
     static Scheduler* getInstance();
 
@@ -36,7 +34,7 @@ public:
     int numCores();
 
 private:
-    Scheduler(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration);
+    Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax,int numCores, int tickDuration);
     ~Scheduler();
 
     // Disable copying and assignment
@@ -44,6 +42,8 @@ private:
     Scheduler& operator=(const Scheduler&) = delete;
 
     ScheduleAlgo scheduleAlgo;
+
+    unsigned int quantumCycleMax;
 
     std::vector<Core*> cores;
 

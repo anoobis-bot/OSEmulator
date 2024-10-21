@@ -5,10 +5,10 @@
 Scheduler* Scheduler::sharedInstance = nullptr;
 std::mutex Scheduler::mtx;
 
-void Scheduler::initialize(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration) {
+void Scheduler::initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycelMax,int numCores, int tickDuration) {
     if (!sharedInstance)
     {
-        sharedInstance = new Scheduler(scheduleAlgo, numCores, tickDuration);
+        sharedInstance = new Scheduler(scheduleAlgo, quantumCycelMax,numCores, tickDuration);
     }
 }
 
@@ -36,16 +36,17 @@ Scheduler* Scheduler::getInstance()
 }
 
 
-Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, int numCores, int tickDuration) : isRunning(true)
+Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores, int tickDuration) : isRunning(true)
 {
-    
+
     // initialize the cores
     for (int i = 0; i < numCores; i++)
     {
-        this->cores.push_back(new Core(tickDuration, i));
+        this->cores.push_back(new Core(tickDuration, i, scheduleAlgo, quantumCycleMax));
     }
 
     this->scheduleAlgo = scheduleAlgo;
+    this->quantumCycleMax = quantumCycleMax;
     this->tickDuration = tickDuration;
 
     // Start the thread in the constructor
