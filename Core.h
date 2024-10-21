@@ -11,7 +11,6 @@ public:
 	void run();
 
 	bool hasAttachedProcess();
-	bool processFinished();
 
 	int getCoreID();
 

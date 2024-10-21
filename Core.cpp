@@ -52,17 +52,6 @@ bool Core::hasAttachedProcess()
 	return false;
 }
 
-bool Core::processFinished()
-{
-	std::lock_guard<std::mutex> lock(this->mtx);
-	if (this->attachedProcess->getState() == Process::FINISHED)
-	{
-		return true;
-	}
-
-	return false;
-}
-
 int Core::getCoreID()
 {
 	return this->coreID;

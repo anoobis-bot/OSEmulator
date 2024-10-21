@@ -102,13 +102,6 @@ void Scheduler::addNewProcess(std::shared_ptr<Process> process)
     this->allProcesses.push_back(process);
 }
 
-void Scheduler::reAddProcess(std::shared_ptr<Process> process)
-{
-    std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
-    this->readyQueue.push_back(process);
-}
-
-
 std::shared_ptr<Process> Scheduler::getFirstProcess()
 { 
 	return this->readyQueue.front();
