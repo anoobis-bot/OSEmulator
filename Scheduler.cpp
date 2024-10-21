@@ -96,15 +96,6 @@ void Scheduler::run()
 
 }
 
-//Scheduler::~Scheduler() {
-//    isRunning = false;
-//    for (auto& thread : threads) {
-//        if (thread.joinable()) {
-//            thread.join();
-//        }
-//    }
-//}
-
 void Scheduler::addNewProcess(std::shared_ptr<Process> process)
 {
     std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
