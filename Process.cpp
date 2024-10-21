@@ -19,7 +19,6 @@ Process::Process(String processName, int id, int totalInstructions ,PrintCommand
 
 void Process::run()
 {
-	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the processState
 	// print something
 	this->command.run();
 	this->logPrintCommand(this->command.getToPrint());
@@ -34,7 +33,6 @@ void Process::run()
 
 void Process::setCoreID(int coreID)
 {
-	std::lock_guard<std::mutex> lock(mtx);
 	this->inCoreID = coreID;
 }
 
@@ -69,19 +67,16 @@ Process::state Process::getState()
 
 void Process::runningState()
 {
-	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
 	this->processState = RUNNING;
 }
 
 void Process::readyState()
 {
-	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
 	this->processState = READY;
 }
 
 void Process::finishState()
 {
-	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
 	this->processState = FINISHED;
 }
 
