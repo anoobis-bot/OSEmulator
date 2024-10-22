@@ -42,11 +42,13 @@ void Core::runFCFS()
 		this->mtx.lock();
 		if (this->hasAttachedProcess())
 		{
-			if (this->attachedProcess->getState() != Process::FINISHED)
+			if (this->attachedProcess->getState() != Process::FINISHED
+				&& this->currentTickDelay >= this->tickDelay)
 			{
 				this->attachedProcess->run();
 			}
 		}
+		incrementTickDelay();
 		this->mtx.unlock();
 	}
 
