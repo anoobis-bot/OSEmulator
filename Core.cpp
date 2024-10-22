@@ -1,8 +1,8 @@
 #include "Core.h"
 
-Core::Core(int tickDuration, int coreID, ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax)
+Core::Core(unsigned int tickDelay, int coreID, ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax)
 {
-	this->tickDuration = tickDuration;
+	this->tickDelay = tickDelay;
 	this->coreID = coreID;
 	this->quantumCycle = 0;
 	this->quantumCycleMax = quantumCycleMax;
@@ -48,8 +48,6 @@ void Core::runFCFS()
 			}
 		}
 		this->mtx.unlock();
-
-		//std::this_thread::sleep_for(std::chrono::milliseconds(tickDuration));
 	}
 
 }
@@ -62,15 +60,15 @@ void Core::runRR()
 		if (this->hasAttachedProcess())
 		{
 			if (!this->finishedQuantumCycle()
-				&& this->attachedProcess->getState() == Process::RUNNING)
+				&& this->attachedProcess->getState() == Process::RUNNING &&
+				this->currentTickDelay >= this->tickDelay)
 			{
 				this->attachedProcess->run();
 				this->quantumCycle = this->quantumCycle + 1;
 			}
 		}
+		incrementTickDelay();
 		this->mtx.unlock();
-
-		//std::this_thread::sleep_for(std::chrono::milliseconds(tickDuration));
 	}
 }
 
@@ -89,6 +87,23 @@ bool Core::finishedQuantumCycle()
 
 	return false;
 	//return this->quantumCycle >= this->quantumCycleMax;
+}
+
+
+void Core::resetTickDelay()
+{
+	this->currentTickDelay = 0;
+}
+
+void Core::incrementTickDelay()
+{
+	if (this->currentTickDelay >= this->tickDelay)
+	{
+		resetTickDelay();
+		return;
+	}
+
+	this->currentTickDelay = this->currentTickDelay + 1;
 }
 
 

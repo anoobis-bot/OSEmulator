@@ -16,7 +16,7 @@
 class Scheduler {
 public:
 
-	static void initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax,int numCores, int tickDuration);
+	static void initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax,int numCores, unsigned int tickDelay);
 
     static Scheduler* getInstance();
 
@@ -34,7 +34,7 @@ public:
     int numCores();
 
 private:
-    Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax,int numCores, int tickDuration);
+    Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax,int numCores, unsigned int tickDelay);
     ~Scheduler();
 
     // Disable copying and assignment
@@ -46,8 +46,6 @@ private:
     unsigned int quantumCycleMax;
 
     std::vector<Core*> cores;
-
-    int tickDuration;
 
     static Scheduler* sharedInstance;
     std::thread workerThread;

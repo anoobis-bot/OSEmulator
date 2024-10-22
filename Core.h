@@ -7,7 +7,7 @@
 class Core
 {
 public:
-	Core(int tickDuration, int coreID, ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax);
+	Core(unsigned int tickDelay, int coreID, ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax);
 	void attachProcess(std::shared_ptr<Process> process);
 	std::shared_ptr<Process> getAttachedProcess();
 	void runFCFS();
@@ -20,11 +20,16 @@ public:
 
 	int getCoreID();
 
+	void resetTickDelay();
+
 private:
 	std::mutex mtx;
 
-	int tickDuration;
+	unsigned int tickDelay;
+	unsigned int currentTickDelay;
 	int coreID;
+
+	void incrementTickDelay();
 
 	unsigned int quantumCycle;
 	unsigned int quantumCycleMax;

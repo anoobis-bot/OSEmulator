@@ -5,10 +5,10 @@
 Scheduler* Scheduler::sharedInstance = nullptr;
 std::mutex Scheduler::mtx;
 
-void Scheduler::initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycelMax,int numCores, int tickDuration) {
+void Scheduler::initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycelMax,int numCores, unsigned int tickDelay) {
     if (!sharedInstance)
     {
-        sharedInstance = new Scheduler(scheduleAlgo, quantumCycelMax,numCores, tickDuration);
+        sharedInstance = new Scheduler(scheduleAlgo, quantumCycelMax,numCores, tickDelay);
     }
 }
 
@@ -36,18 +36,17 @@ Scheduler* Scheduler::getInstance()
 }
 
 
-Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores, int tickDuration) : isRunning(true)
+Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores, unsigned int tickDelay) : isRunning(true)
 {
 
     // initialize the cores
     for (int i = 0; i < numCores; i++)
     {
-        this->cores.push_back(new Core(tickDuration, i, scheduleAlgo, quantumCycleMax));
+        this->cores.push_back(new Core(tickDelay, i, scheduleAlgo, quantumCycleMax));
     }
 
     this->scheduleAlgo = scheduleAlgo;
     this->quantumCycleMax = quantumCycleMax;
-    this->tickDuration = tickDuration;
 
     // Start the thread in the constructor
     this->workerThread = std::thread(&Scheduler::run, this);
@@ -66,7 +65,7 @@ void Scheduler::firstComeFirstServe()
 	// check each core if tapos na yung process. assign empty cores.
     for (Core* core : cores)
     {
-        if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() != Process::FINISHED)
+        if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::RUNNING)
         {
             continue;
         }
@@ -76,6 +75,7 @@ void Scheduler::firstComeFirstServe()
 		}
 
         core->attachProcess(this->getFirstProcess());
+        core->resetTickDelay();
         this->getFirstProcess()->setCoreID(core->getCoreID());
         this->getFirstProcess()->runningState();
         this->removeFirstProcess();
@@ -111,6 +111,7 @@ void Scheduler::roundRobin()
         }
         core->attachProcess(this->getFirstProcess());
         core->resetQuantumCycle();
+        core->resetTickDelay();
         this->getFirstProcess()->setCoreID(core->getCoreID());
         this->getFirstProcess()->runningState();
         this->removeFirstProcess();
@@ -132,9 +133,6 @@ void Scheduler::run()
         {
             roundRobin();
         }
-        
-
-        //std::this_thread::sleep_for(std::chrono::milliseconds(this->tickDuration));
     }
 
 }
