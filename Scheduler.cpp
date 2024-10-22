@@ -60,7 +60,7 @@ Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, in
 void Scheduler::firstComeFirstServe()
 {
     // sort the ready queue
-    this->sortReadyQueue();
+    //this->sortReadyQueue();
 
     
 	// check each core if tapos na yung process. assign empty cores.
@@ -83,6 +83,43 @@ void Scheduler::firstComeFirstServe()
     }
 }
 
+void Scheduler::roundRobin()
+{
+    // check each core if tapos na yung process. assign empty cores.
+    for (Core* core : cores)
+    {
+        if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() != Process::FINISHED && !core->finishedQuantumCycle())
+        {
+            continue;
+        }
+        if (this->readyQueue.empty())
+        {
+            if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::RUNNING)
+            {
+                core->resetQuantumCycle();
+            }
+
+        	continue;
+        }
+
+        mtx.lock();
+        if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() != Process::FINISHED && core->finishedQuantumCycle())
+        {
+            core->getAttachedProcess()->setCoreID(-1);
+            core->getAttachedProcess()->readyState();
+            reAddProcess(core->getAttachedProcess());
+        }
+        core->attachProcess(this->getFirstProcess());
+        core->resetQuantumCycle();
+        this->getFirstProcess()->setCoreID(core->getCoreID());
+        this->getFirstProcess()->runningState();
+        this->removeFirstProcess();
+        mtx.unlock();
+
+    }
+}
+
+
 void Scheduler::run()
 {
     while (true)
@@ -91,16 +128,28 @@ void Scheduler::run()
         {
             firstComeFirstServe();
         }
+        else if (this->scheduleAlgo == RR)
+        {
+            roundRobin();
+        }
+        
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(this->tickDuration));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(this->tickDuration));
     }
 
 }
 
 void Scheduler::addNewProcess(std::shared_ptr<Process> process)
 {
+    //std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
     this->readyQueue.push_back(process);
     this->allProcesses.push_back(process);
+}
+
+void Scheduler::reAddProcess(std::shared_ptr<Process> process)
+{
+    //std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
+    this->readyQueue.push_back(process);
 }
 
 std::shared_ptr<Process> Scheduler::getFirstProcess()

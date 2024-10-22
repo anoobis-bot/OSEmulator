@@ -19,16 +19,19 @@ Process::Process(String processName, int id, int totalInstructions ,PrintCommand
 
 void Process::run()
 {
+	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
 	// print something
 	this->command.run();
 	this->logPrintCommand(this->command.getToPrint());
-	
+
 	this->currentInstruction = currentInstruction + 1;
 	if (currentInstruction >= totalInstructions)
 	{
 		this->processState = FINISHED;
 		this->closeLogFile();
 	}
+
+	//std::this_thread::sleep_for(std::chrono::milliseconds(300));
 }
 
 void Process::setCoreID(int coreID)

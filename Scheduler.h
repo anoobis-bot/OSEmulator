@@ -22,9 +22,9 @@ public:
 
     void run();
     void addNewProcess(std::shared_ptr<Process> process);
+    void reAddProcess(std::shared_ptr<Process> process);
     std::shared_ptr<Process> getFirstProcess();
     void removeFirstProcess();
-    void startScheduling();
     void printProcesses();
 
     std::vector<std::shared_ptr<Process>>& getAllProcess();
@@ -59,6 +59,7 @@ private:
     static std::mutex mtx;
 
     void firstComeFirstServe();
+    void roundRobin();
 
     void sortReadyQueue();
 

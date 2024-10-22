@@ -15,6 +15,9 @@ public:
 
 	bool hasAttachedProcess();
 
+	bool finishedQuantumCycle();
+	void resetQuantumCycle();
+
 	int getCoreID();
 
 private:
@@ -22,6 +25,7 @@ private:
 
 	int tickDuration;
 	int coreID;
+
 	unsigned int quantumCycle;
 	unsigned int quantumCycleMax;
 	std::shared_ptr<Process> attachedProcess;
