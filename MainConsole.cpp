@@ -59,7 +59,7 @@ std::pair<String, String> parseScreenCommand(String userInput) {
 
 void MainConsole::handleCommand(String command)
 {
-    String formattedInput = toLowerCase(command);
+    //String formattedInput = toLowerCase(command);
     static bool isInitialized = false; //default to false
     auto consoleManager = ConsoleManager::getInstance();
     if (command == "exit")
@@ -151,7 +151,7 @@ void MainConsole::handleCommand(String command)
 
     else if (command.substr(0, 6) == "screen")
     {
-        auto [screenCommand, processName] = parseScreenCommand(formattedInput);
+        auto [screenCommand, processName] = parseScreenCommand(command);
 
         if (screenCommand.empty())
         {

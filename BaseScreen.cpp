@@ -34,7 +34,11 @@ void BaseScreen::process()
 		std::cout << "root:\>";
 		std::getline(std::cin, command);
 
-		if (command == "clear" || command == "cls")
+		if (command == "process-smi")
+		{
+			this->printProcessInfo();
+		}
+		else if (command == "clear" || command == "cls")
 		{
 			system("cls");
 			this->printProcessInfo();
@@ -49,6 +53,7 @@ void BaseScreen::process()
 			printMsgNewLine("Command not found.");
 			printMsgNewLine("");
 		}
+		printMsgNewLine("");
 	}
 }
 
@@ -57,12 +62,20 @@ void BaseScreen::display()
 	this->printProcessInfo();
 }
 
-void BaseScreen::printProcessInfo() const
+void BaseScreen::printProcessInfo()
 {
-
-	std::cout << "Process Name: " << name << std::endl;
-	std::cout << "Instruction Line: 0 / 100" << std::endl;
-	std::cout << "Screen Created At: "
-		<< this->screenCreationTime << std::endl;
-
+	std::cout << "Process: " << this->attachedProcess->getName() << std::endl;
+	std::cout << "ID: " << std::to_string(this->attachedProcess->getID()) << std::endl;
+	printMsgNewLine("");
+	if (this->attachedProcess->getState() != Process::FINISHED)
+	{
+		std::cout << "Current Instruction Line: " + std::to_string(this->attachedProcess->getCurrentInstruction()) << std::endl;
+		std::cout << "Lines of code: " + std::to_string(this->attachedProcess->getTotalInstructions()) << std::endl;
+		std::cout << "Screen Created At: " + this->screenCreationTime << std::endl;
+	}
+	else
+	{
+		std::cout << "Finished." << std::endl;
+		std::cout << "Screen Created At: " + this->screenCreationTime << std::endl;
+	}
 }

@@ -44,16 +44,20 @@ int Process::getCoreID()
 	return this->inCoreID;
 }
 
+int Process::getID()
+{
+	return this->id;
+}
 
 std::string Process::getName() const {
 	return processName;
 }
 
-int Process::getCurrentInstruction() const {
+int Process::getCurrentInstruction() {
 	return currentInstruction;
 }
 
-int Process::getTotalInstructions() const {
+int Process::getTotalInstructions() {
 	return totalInstructions;
 }
 

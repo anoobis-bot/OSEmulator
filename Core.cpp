@@ -33,8 +33,6 @@ std::shared_ptr<Process> Core::getAttachedProcess()
 	return this->attachedProcess;
 }
 
-
-
 void Core::runFCFS()
 {
 	while(true)

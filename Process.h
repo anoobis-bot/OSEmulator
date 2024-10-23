@@ -11,10 +11,12 @@ class Process
 public:
 	Process(String processName, int id, int totalInstructions, PrintCommand command);
 	String getName() const;
-	int getCurrentInstruction() const;
-	int getTotalInstructions() const;
+	int getCurrentInstruction();
+	int getTotalInstructions();
 	std::chrono::system_clock::time_point getCreationTime() const;
 	String getFormattedTime();
+	int getID();
+
 
 	void run();
 
