@@ -77,11 +77,11 @@ void Core::runRR()
 				this->attachedProcess->run();
 				this->quantumCycle = this->quantumCycle + 1;
 			}
-			//else if (this->attachedProcess->getState() == Process::FINISHED &&
-			//	this->currentTickDelay >= this->tickDelay)
-			//{
-			//	detachProcess();
-			//}
+			else if (this->attachedProcess->getState() == Process::FINISHED &&
+				this->currentTickDelay >= this->tickDelay)
+			{
+				detachProcess();
+			}
 		}
 		incrementTickDelay();
 		this->mtx.unlock();
