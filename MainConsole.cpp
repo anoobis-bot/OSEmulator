@@ -13,6 +13,8 @@
 #include <iomanip>
 #include "PrintCommand.h"
 #include "Scheduler.h"
+#include <fstream>
+#include <stdexcept>
 
 extern ConsoleManager consoleManager;
 
@@ -58,6 +60,7 @@ std::pair<String, String> parseScreenCommand(String userInput) {
 void MainConsole::handleCommand(String command)
 {
     String formattedInput = toLowerCase(command);
+    static bool isInitialized = false; //default to false
     auto consoleManager = ConsoleManager::getInstance();
     if (command == "exit")
     {
@@ -66,9 +69,78 @@ void MainConsole::handleCommand(String command)
         std::terminate();
 
     }
-    else if (command == "initialize")
+    else if (command == "initialize")  // see if the initialization is working
     {
-        printMsg("initialize command recognized. Doing something");
+        if (isInitialized) {
+            printMsg("Already initialized. Please restart to reinitialize.");
+            return;
+        }
+
+        std::ifstream configFile("config.txt");
+        if (!configFile) {
+            throw std::runtime_error("Could not open config.txt");
+        }
+
+        String param;
+        int value;
+
+        while (configFile >> param >> value) {
+            if (param == "num-cpu") {
+                if (value < 1 || value > 128) { // inputed a temp limit
+                    throw std::out_of_range("num-cpu must be in the range [1, 128]");
+                }
+                // Set number of CPUs in the Scheduler instance
+                Scheduler::getInstance()->setNumCores(value);
+            }
+            else if (param == "scheduler") {
+                if (value == 0) { 
+                    Scheduler::getInstance()->setSchedulerType("rr");
+                }
+                else {
+                    Scheduler::getInstance()->setSchedulerType("fcfs");
+                }
+            }
+            else if (param == "quantum-cycles") {
+                if (value < 1 || value >(1 << 32)) {
+                    throw std::out_of_range("quantum-cycles must be in the range [1, 232]");
+                }
+                Scheduler::getInstance()->setQuantumCycles(value);
+            }
+            else if (param == "batch-process-freq") {
+                if (value < 1 || value >(1 << 32)) {
+                    throw std::out_of_range("batch-process-freq must be in the range [1, 232]");
+                }
+                Scheduler::getInstance()->setBatchProcessFreq(value);
+            }
+            else if (param == "min-ins") {
+                if (value < 1 || value >(1 << 32)) {
+                    throw std::out_of_range("min-ins must be in the range [1, 232]");
+                }
+                Scheduler::getInstance()->setMinInstructions(value);
+            }
+            else if (param == "max-ins") {
+                if (value < 1 || value >(1 << 32)) {
+                    throw std::out_of_range("max-ins must be in the range [1, 232]");
+                }
+                Scheduler::getInstance()->setMaxInstructions(value);
+            }
+            else if (param == "delay-per-exec") {
+                if (value < 0 || value >(1 << 32)) {
+                    throw std::out_of_range("delay-per-exec must be in the range [0, 232]");
+                }
+                Scheduler::getInstance()->setDelayPerExec(value);
+            }
+            else {
+                printMsg("Unknown parameter in config.txt: " + param);
+            }
+        }
+
+        isInitialized = true; // Mark initialization as complete
+        printMsg("Initialization complete.");
+    }
+
+    else if (!isInitialized) {
+        printMsg("Please run the 'initialize' command first.");
     }
 
     else if (command == "clear" || command == "cls")

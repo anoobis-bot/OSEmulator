@@ -33,6 +33,16 @@ public:
     int getSize();
     int numCores();
 
+    // for the config.txt, delete later
+    void setNumCores(int num);
+    void setSchedulerType(const std::string& type);
+    void setQuantumCycles(int quantum);
+    void setBatchProcessFreq(int freq);
+    void setMinInstructions(int minIns);
+    void setMaxInstructions(int maxIns);
+    void setDelayPerExec(int delay);
+
+
 private:
     Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax,int numCores, unsigned int tickDelay);
     ~Scheduler();
