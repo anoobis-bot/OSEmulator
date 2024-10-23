@@ -1,0 +1,18 @@
+CPU Utilization: 100.00%
+Cores used: 4
+Cores available: 0
+
+---------------------------------------
+Running Processes:
+
+Finished Processes:
+Process_1                (10/23/2024 11:32:22PM)       FINISHED		100/100
+Process_2                (10/23/2024 11:32:23PM)       FINISHED		100/100
+Process_3                (10/23/2024 11:32:24PM)       FINISHED		100/100
+Process_4                (10/23/2024 11:32:25PM)       FINISHED		100/100
+Process_5                (10/23/2024 11:32:26PM)       FINISHED		100/100
+Process_6                (10/23/2024 11:32:27PM)       FINISHED		100/100
+Process_7                (10/23/2024 11:32:28PM)       FINISHED		100/100
+Process_8                (10/23/2024 11:32:29PM)       FINISHED		100/100
+Process_9                (10/23/2024 11:32:30PM)       FINISHED		100/100
+---------------------------------------

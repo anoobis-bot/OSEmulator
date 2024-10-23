@@ -1,5 +1,5 @@
 #include "Scheduler.h"
-
+#include <iomanip>
 #include <memory>
 
 Scheduler* Scheduler::sharedInstance = nullptr;
@@ -273,4 +273,44 @@ void Scheduler::createProcess(int processID)
     String toPrint = "Hello world from " + processName;
     auto process = std::make_shared<Process>(processName, processID, 100, PrintCommand(toPrint));
 	addNewProcess(process);
+}
+
+float Scheduler::getCPUUtilization()
+{
+	int totalCores = cores.size();
+	int activeCores = 0;
+	for (Core* core : cores)
+	{
+		if (core->hasAttachedProcess())
+		{
+            activeCores++;
+		}
+	}
+	return (float)activeCores / totalCores;
+}
+
+int Scheduler::getAvailableCores()
+{
+    int availableCores = 0;
+    for (Core* core : cores)
+    {
+        if (!core->hasAttachedProcess())
+        {
+            availableCores++;
+        }
+    }
+    return availableCores;
+}
+
+int Scheduler::getNumberOfCoresUsed()
+{
+	int coresUsed = 0;
+	for (Core* core : cores)
+	{
+		if (core->hasAttachedProcess())
+		{
+			coresUsed++;
+		}
+	}
+	return coresUsed;
 }

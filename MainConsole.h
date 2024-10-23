@@ -14,6 +14,8 @@ public:
 
 	String formatNA(int num);
 
+	void saveReport();
+
 private:
 	void displayHeader();
 	void handleCommand(String command);

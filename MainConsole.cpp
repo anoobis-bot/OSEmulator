@@ -160,6 +160,13 @@ void MainConsole::handleCommand(String command)
 
         else if (screenCommand == "-ls")
         {
+            std::cout << "CPU Utilization: "
+                << std::fixed << std::setprecision(2)
+                << Scheduler::getInstance()->getCPUUtilization() * 100  
+                << "%" << '\n';
+			std::cout << "Cores used: " << Scheduler::getInstance()->getNumberOfCoresUsed() << '\n';
+			std::cout << "Cores available: " << Scheduler::getInstance()->getAvailableCores() << '\n';
+            std::cout << '\n';
             std::cout << "---------------------------------------" << '\n';
             std::vector<std::shared_ptr<Process>>& allProcesses = Scheduler::getInstance()->getAllProcess();
 
@@ -251,7 +258,7 @@ void MainConsole::handleCommand(String command)
     }
     else if (command == "report-util")
     {
-        printMsg("report-util command recognized. Doing something");
+        saveReport();
     }
     else if (command == "debug-info")
     {
@@ -275,4 +282,60 @@ String MainConsole::formatNA(int num)
 
 	return std::to_string(num);
 
+}
+
+void MainConsole::saveReport()
+{
+    std::ofstream file("csopesy-log.txt");
+    if (!file) {
+        std::cerr << "Error opening file." << std::endl;
+        return;
+    }
+
+    file << "CPU Utilization: "
+        << std::fixed << std::setprecision(2)
+        << Scheduler::getInstance()->getCPUUtilization() * 100
+        << "%" << '\n';
+    file << "Cores used: " << Scheduler::getInstance()->getNumberOfCoresUsed() << '\n';
+    file << "Cores available: " << Scheduler::getInstance()->getAvailableCores() << '\n';
+    file << '\n';
+    file << "---------------------------------------" << '\n';
+    std::vector<std::shared_ptr<Process>>& allProcesses = Scheduler::getInstance()->getAllProcess();
+
+    if (allProcesses.empty())
+    {
+        file << "You currently don't have any processes." << '\n';
+    }
+    else
+    {
+        file << "Running Processes:\n";
+
+        for (const std::shared_ptr<Process>& process : allProcesses)
+        {
+            if (process->getCoreID() != -1 && process->getState() != Process::FINISHED)
+            {
+                file << std::left << std::setw(25) << process->getName()
+                    << std::setw(30) << process->getFormattedTime()
+                    << "Core:" << process->getCoreID() << '\t'
+                    << '\t' << process->getCurrentInstruction() << "/"
+                    << process->getTotalInstructions() << '\n';
+            }
+        }
+
+        file << "\nFinished Processes:\n";
+
+        for (const std::shared_ptr<Process>& process : allProcesses)
+        {
+            if (process->getState() == Process::FINISHED)
+            {
+                file << std::left << std::setw(25) << process->getName()
+                    << std::setw(30) << process->getFormattedTime()
+                    << "FINISHED" << '\t'
+                    << '\t' << process->getCurrentInstruction() << "/"
+                    << process->getTotalInstructions() << '\n';
+            }
+        }
+    }
+    file << "---------------------------------------" << '\n';
+    std::cout << "Report generated at csopesy-log.txt!" << std::endl;
 }

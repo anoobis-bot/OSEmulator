@@ -45,6 +45,10 @@ public:
     void schedulerStop();
     void schedulerTestLoop();
     void createProcess(int processID);
+    int getAvailableCores();
+    float getCPUUtilization();
+    int getNumberOfCoresUsed();
+
 
 private:
     Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax,int numCores, unsigned int tickDelay);
