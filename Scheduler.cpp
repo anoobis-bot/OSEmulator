@@ -235,3 +235,42 @@ void Scheduler::setDelayPerExec(int delay) {
      // Debugging output
      std::cout << "Delay Per Execution Set to: " << delay << std::endl;
 }
+
+void Scheduler::schedulerTest()
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    if (!schedulerTestFlag) {
+        schedulerTestFlag = true;
+        testThread = std::thread(&Scheduler::schedulerTestLoop, this);
+    }
+}
+
+void Scheduler::schedulerStop()
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    if (schedulerTestFlag) {
+        schedulerTestFlag = false;
+    }
+
+    if (testThread.joinable()) {
+        testThread.join();  // Ensure the thread is properly joined
+    }
+}
+
+void Scheduler::schedulerTestLoop()
+{
+    while (schedulerTestFlag) {
+        processCounter++;
+        int processID = processCounter;
+        createProcess(processID);
+        std::this_thread::sleep_for(std::chrono::duration<double>(batchProcessFreq));
+    }
+}
+
+void Scheduler::createProcess(int processID)
+{
+    std::string processName = "Process_" + std::to_string(processID).substr(0, 2);
+    String toPrint = "Hello world from " + processName;
+    auto process = std::make_shared<Process>(processName, processID, 100, PrintCommand(toPrint));
+	addNewProcess(process);
+}

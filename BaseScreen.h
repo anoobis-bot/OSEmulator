@@ -14,7 +14,7 @@ public:
 	void process() override;
 
 private:
-	void printProcessInfo() const;
+	void printProcessInfo();
 	std::shared_ptr<Process> attachedProcess;
 	String screenCreationTime;
 	bool refreshed = false;

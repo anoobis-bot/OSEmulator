@@ -41,7 +41,10 @@ public:
     void setMinInstructions(int minIns);
     void setMaxInstructions(int maxIns);
     void setDelayPerExec(int delay);
-
+    void schedulerTest();
+    void schedulerStop();
+    void schedulerTestLoop();
+    void createProcess(int processID);
 
 private:
     Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax,int numCores, unsigned int tickDelay);
@@ -59,6 +62,7 @@ private:
     int minInstructions;       // Minimum instructions for a process
     int maxInstructions;       // Maximum instructions for a process
     int delayPerExec;          // Delay per execution cycle
+    bool schedulerTestFlag = false;
 
     std::vector<Core*> cores;
 
@@ -68,6 +72,9 @@ private:
     std::vector<std::shared_ptr<Process>> readyQueue;
     std::vector<std::shared_ptr<Process>> allProcesses;
     std::vector<std::thread> threads;
+
+    std::thread testThread;
+    int processCounter = 0;
 
     static std::mutex mtx;
 

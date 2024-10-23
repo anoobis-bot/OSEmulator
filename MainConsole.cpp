@@ -243,11 +243,11 @@ void MainConsole::handleCommand(String command)
 
     else if (command == "scheduler-test")
     {
-        printMsg("scheduler-test command recognized. Doing something");
+		Scheduler::getInstance()->schedulerTest();
     }
     else if (command == "scheduler-stop")
     {
-        printMsg("scheduler-stop command recognized. Doing something");
+        Scheduler::getInstance()->schedulerStop();
     }
     else if (command == "report-util")
     {
