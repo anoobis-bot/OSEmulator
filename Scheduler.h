@@ -55,6 +55,11 @@ private:
 
     unsigned int quantumCycleMax;
 
+    int batchProcessFreq;      // Frequency of batch processing
+    int minInstructions;       // Minimum instructions for a process
+    int maxInstructions;       // Maximum instructions for a process
+    int delayPerExec;          // Delay per execution cycle
+
     std::vector<Core*> cores;
 
     static Scheduler* sharedInstance;
