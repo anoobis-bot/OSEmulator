@@ -31,6 +31,8 @@ private:
 
 	void incrementTickDelay();
 
+	void detachProcess();
+
 	unsigned int quantumCycle;
 	unsigned int quantumCycleMax;
 	std::shared_ptr<Process> attachedProcess;
