@@ -41,3 +41,10 @@ std::string toLowerCase(std::string str) {
     }
     return str;
 }
+
+void printHeaderMain(std::string headerFile)
+{
+	printAscii(headerFile);
+	printMsgNewLine("Hello, Welcome to CSOPESY commandline!");
+	printMsgNewLine("Type 'initialize' to start, 'exit' to quit");
+}

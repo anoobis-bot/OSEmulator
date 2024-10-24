@@ -8,10 +8,11 @@ Scheduler* Scheduler::sharedInstance = nullptr;
 std::mutex Scheduler::mtx;
 
 // Initialize the shared instance of the Scheduler
-void Scheduler::initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores, unsigned int tickDelay) {
+void Scheduler::initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
+    unsigned int delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq) {
     if (!sharedInstance)
     {
-        sharedInstance = new Scheduler(scheduleAlgo, quantumCycleMax, numCores, tickDelay);
+        sharedInstance = new Scheduler(scheduleAlgo, quantumCycleMax, numCores, delayPerExec, minInstructions, maxInstruction, batchProcessFreq);
     }
 }
 
@@ -44,16 +45,21 @@ Scheduler* Scheduler::getInstance()
 }
 
 // Constructor for Scheduler
-Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores, unsigned int tickDelay) : isRunning(true)
+Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
+    unsigned int delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq) : isRunning(true)
 {
     // Initialize the cores
     for (int i = 0; i < numCores; i++)
     {
-        this->cores.push_back(new Core(tickDelay, i, scheduleAlgo, quantumCycleMax));
+        this->cores.push_back(new Core(delayPerExec, i, scheduleAlgo, quantumCycleMax));
     }
 
     this->scheduleAlgo = scheduleAlgo;
     this->quantumCycleMax = quantumCycleMax;
+	this->delayPerExec = delayPerExec;
+	this->minInstructions = minInstructions;
+	this->maxInstructions = maxInstruction;
+	this->batchProcessFreq = batchProcessFreq;
 
     // Start the worker thread
     this->workerThread = std::thread(&Scheduler::run, this);
@@ -323,4 +329,14 @@ int Scheduler::getNumberOfCoresUsed()
 		}
 	}
 	return coresUsed;
+}
+
+unsigned int Scheduler::getMinInstructions()
+{
+	return minInstructions;
+}
+
+unsigned int Scheduler::getMaxInstructions()
+{
+	return maxInstructions;
 }

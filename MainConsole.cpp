@@ -15,6 +15,7 @@
 #include "Scheduler.h"
 #include <fstream>
 #include <stdexcept>
+#include <random>
 
 extern ConsoleManager consoleManager;
 
@@ -59,7 +60,6 @@ std::pair<String, String> parseScreenCommand(String userInput) {
 
 void MainConsole::handleCommand(String command)
 {
-    static bool isInitialized = false; 
     auto consoleManager = ConsoleManager::getInstance();
     if (command == "exit")
     {
@@ -67,76 +67,7 @@ void MainConsole::handleCommand(String command)
         exit(0);
         std::terminate();
 
-    }
-    else if (command == "initialize")  // see if the initialization is working
-    {
-        if (isInitialized) {
-            printMsg("Already initialized. Please restart to reinitialize.");
-            return;
-        }
-
-        std::ifstream configFile("config.txt");
-        if (!configFile) {
-            throw std::runtime_error("Could not open config.txt");
-        }
-
-        std::string param;
-
-        while (configFile >> param) {
-            if (param == "scheduler") {
-                std::string schedulerType;
-                configFile >> schedulerType;
-
-                if (schedulerType == "\"rr\"") {
-                    Scheduler::getInstance()->setSchedulerType("rr");
-                }
-                else if (schedulerType == "\"fcfs\"") {
-                    Scheduler::getInstance()->setSchedulerType("fcfs");
-                }
-                
-            }
-            else {
-                int value;
-                configFile >> value;
-
-                if (param == "num-cpu") {
-                    
-                    Scheduler::getInstance()->setNumCores(value);
-                }
-                else if (param == "quantum-cycles") {
-                   
-                    Scheduler::getInstance()->setQuantumCycles(value);
-                }
-                else if (param == "batch-process-freq") {
-                    
-                    Scheduler::getInstance()->setBatchProcessFreq(value);
-                }
-                else if (param == "min-ins") {
-                    
-                    Scheduler::getInstance()->setMinInstructions(value);
-                }
-                else if (param == "max-ins") {
-                    
-                    Scheduler::getInstance()->setMaxInstructions(value);
-                }
-                else if (param == "delay-per-exec") {
-                    
-                    Scheduler::getInstance()->setDelayPerExec(value);
-                }
-                else {
-                    printMsg("Unknown parameter in config.txt: " + param);
-                }
-            }
-        }
-
-        isInitialized = true; 
-        printMsg("Initialization complete.");
-    }
-
-    else if (!isInitialized) {
-        printMsg("Please run the 'initialize' command first.");
-    }
-
+    }    
     else if (command == "clear" || command == "cls")
     {
         system("cls");
@@ -210,9 +141,14 @@ void MainConsole::handleCommand(String command)
         {
             if (!consoleManager->isScreenRegistered(processName))
             {
+                std::random_device rd;  // Random number seed
+                std::mt19937 gen(rd()); // Random number generator (Mersenne Twister)
+                std::uniform_int_distribution<> dis(Scheduler::getInstance()->getMinInstructions(), Scheduler::getInstance()->getMaxInstructions());
+
+                int totalinstructions = dis(gen);
                 // Register new process and switch to the screen
                 String toPrint = "Hello world from " + processName;
-                auto process = std::make_shared<Process>(processName, Scheduler::getInstance()->getAllProcess().size(), 100, PrintCommand(toPrint));
+                auto process = std::make_shared<Process>(processName, Scheduler::getInstance()->getAllProcess().size(), totalinstructions, PrintCommand(toPrint));
                 auto processScreen = std::make_shared<BaseScreen>(process, processName);
 
                 Scheduler::getInstance()->addNewProcess(process);
@@ -260,6 +196,10 @@ void MainConsole::handleCommand(String command)
         std::cout << "Number of cores: " << Scheduler::getInstance()->numCores() << '\n';
         std::cout << "Process List: \n";
         Scheduler::getInstance()->printProcesses();
+    }
+    else if (command == "initialize")
+    {
+        std::cout << "The emulator has already been initialized." << std::endl;
     }
     else
     {
