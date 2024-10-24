@@ -28,6 +28,12 @@ void Core::attachProcess(std::shared_ptr<Process> process)
 	this->attachedProcess = process;
 }
 
+void Core::detachProcess()
+{
+	this->attachedProcess = nullptr;
+}
+
+
 std::shared_ptr<Process> Core::getAttachedProcess()
 {
 	return this->attachedProcess;
@@ -44,6 +50,11 @@ void Core::runFCFS()
 				&& this->currentTickDelay >= this->tickDelay)
 			{
 				this->attachedProcess->run();
+			}
+			else if (this->attachedProcess->getState() == Process::FINISHED &&
+				this->currentTickDelay >= this->tickDelay)
+			{
+				detachProcess();
 			}
 		}
 		incrementTickDelay();
@@ -65,6 +76,11 @@ void Core::runRR()
 			{
 				this->attachedProcess->run();
 				this->quantumCycle = this->quantumCycle + 1;
+			}
+			else if (this->attachedProcess->getState() == Process::FINISHED &&
+				this->currentTickDelay >= this->tickDelay)
+			{
+				detachProcess();
 			}
 		}
 		incrementTickDelay();
