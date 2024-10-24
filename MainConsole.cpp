@@ -59,8 +59,7 @@ std::pair<String, String> parseScreenCommand(String userInput) {
 
 void MainConsole::handleCommand(String command)
 {
-    //String formattedInput = toLowerCase(command);
-    static bool isInitialized = false; //default to false
+    static bool isInitialized = false; 
     auto consoleManager = ConsoleManager::getInstance();
     if (command == "exit")
     {
@@ -88,9 +87,6 @@ void MainConsole::handleCommand(String command)
                 std::string schedulerType;
                 configFile >> schedulerType;
 
-                // Print the parameter and value for debugging purposes
-                // std::cout << "Reading config: Parameter: " << param << ", Value: " << schedulerType << std::endl;
-
                 if (schedulerType == "\"rr\"") {
                     Scheduler::getInstance()->setSchedulerType("rr");
                 }
@@ -102,8 +98,6 @@ void MainConsole::handleCommand(String command)
             else {
                 int value;
                 configFile >> value;
-                // Print the parameter and value for debugging purposes
-                // std::cout << "Reading config: Parameter: " << param << ", Value: " << value << std::endl;
 
                 if (param == "num-cpu") {
                     
@@ -135,7 +129,7 @@ void MainConsole::handleCommand(String command)
             }
         }
 
-        isInitialized = true; // Mark initialization as complete
+        isInitialized = true; 
         printMsg("Initialization complete.");
     }
 

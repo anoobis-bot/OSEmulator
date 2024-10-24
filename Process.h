@@ -17,7 +17,6 @@ public:
 	String getFormattedTime();
 	int getID();
 
-
 	void run();
 
 	enum state
@@ -57,5 +56,4 @@ private:
 	std::mutex mtx;
 
 	PrintCommand command;
-	
 };

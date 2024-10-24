@@ -1,7 +1,7 @@
 #include "Process.h"
 #include <iostream>
 #include <filesystem> 
-
+#include "ConsoleManager.h"
 #include "PrintCommand.h"
 
 Process::Process(String processName, int id, int totalInstructions ,PrintCommand command) : creationTime(std::chrono::system_clock::now()), command(command)
@@ -28,6 +28,7 @@ void Process::run()
 	if (currentInstruction >= totalInstructions)
 	{
 		this->processState = FINISHED;
+		ConsoleManager::getInstance()->unregisterScreen(this->processName);
 		this->closeLogFile();
 	}
 

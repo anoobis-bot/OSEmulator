@@ -1,6 +1,8 @@
 #include "Scheduler.h"
+#include "ConsoleManager.h"
 #include <iomanip>
 #include <memory>
+#include <random>
 
 Scheduler* Scheduler::sharedInstance = nullptr;
 std::mutex Scheduler::mtx;
@@ -269,9 +271,17 @@ void Scheduler::schedulerTestLoop()
 
 void Scheduler::createProcess(int processID)
 {
+    std::random_device rd;  // Random number seed
+    std::mt19937 gen(rd()); // Random number generator (Mersenne Twister)
+    std::uniform_int_distribution<> dis(minInstructions, maxInstructions);
+
+    int totalinstructions = dis(gen);
+
     std::string processName = "Process_" + std::to_string(processID).substr(0, 2);
     String toPrint = "Hello world from " + processName;
-    auto process = std::make_shared<Process>(processName, processID, 100, PrintCommand(toPrint));
+    auto process = std::make_shared<Process>(processName, processID, totalinstructions, PrintCommand(toPrint));
+    auto processScreen = std::make_shared<BaseScreen>(process, processName);
+    ConsoleManager::getInstance()->registerScreen(processScreen);
 	addNewProcess(process);
 }
 
