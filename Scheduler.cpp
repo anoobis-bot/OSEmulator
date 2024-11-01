@@ -256,25 +256,35 @@ void Scheduler::schedulerTest()
 
 void Scheduler::schedulerStop()
 {
-    std::lock_guard<std::mutex> lock(mtx);
-    if (schedulerTestFlag) {
-        schedulerTestFlag = false;
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        if (schedulerTestFlag) {
+            schedulerTestFlag = false;
+        }
     }
+    cv.notify_all();  // wake up the scheduler test loop immediately
 
     if (testThread.joinable()) {
         testThread.join();  // Ensure the thread is properly joined
     }
 }
 
+
 void Scheduler::schedulerTestLoop()
 {
+    std::unique_lock<std::mutex> lock(mtx);
     while (schedulerTestFlag) {
         processCounter++;
         int processID = processCounter;
         createProcess(processID);
-        std::this_thread::sleep_for(std::chrono::duration<double>(batchProcessFreq));
+
+        // wait with the ability to wake up if schedulerTestFlag is set to false
+        cv.wait_for(lock, std::chrono::duration<double>(batchProcessFreq), [this] {
+            return !schedulerTestFlag;
+        });
     }
 }
+
 
 void Scheduler::createProcess(int processID)
 {

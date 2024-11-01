@@ -71,6 +71,7 @@ private:
     unsigned int maxInstructions;       
     double delayPerExec;
     bool schedulerTestFlag = false;
+    std::condition_variable cv;
 
     std::vector<Core*> cores;
 
