@@ -17,7 +17,7 @@ class Scheduler {
 public:
 
 	static void initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-        unsigned int delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq);
+        double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq);
 
     static Scheduler* getInstance();
 
@@ -55,7 +55,7 @@ public:
 
 private:
     Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-        unsigned int delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq);
+        double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq);
     ~Scheduler();
 
     // Disable copying and assignment
@@ -69,7 +69,7 @@ private:
     unsigned int batchProcessFreq;      
     unsigned int minInstructions;       
     unsigned int maxInstructions;       
-    unsigned int delayPerExec;          
+    double delayPerExec;
     bool schedulerTestFlag = false;
 
     std::vector<Core*> cores;

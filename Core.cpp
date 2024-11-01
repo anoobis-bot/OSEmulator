@@ -1,8 +1,8 @@
 #include "Core.h"
 
-Core::Core(unsigned int tickDelay, int coreID, ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax)
+Core::Core(double delayPerExec, int coreID, ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax)
 {
-	this->tickDelay = tickDelay;
+	this->delayPerExec = delayPerExec;
 	this->coreID = coreID;
 	this->quantumCycle = 0;
 	this->quantumCycleMax = quantumCycleMax;
@@ -46,19 +46,17 @@ void Core::runFCFS()
 		this->mtx.lock();
 		if (this->hasAttachedProcess())
 		{
-			if (this->attachedProcess->getState() != Process::FINISHED
-				&& this->currentTickDelay >= this->tickDelay)
+			if (this->attachedProcess->getState() != Process::FINISHED)
 			{
 				this->attachedProcess->run();
 			}
-			else if (this->attachedProcess->getState() == Process::FINISHED &&
-				this->currentTickDelay >= this->tickDelay)
+			else if (this->attachedProcess->getState() == Process::FINISHED)
 			{
 				detachProcess();
 			}
 		}
-		incrementTickDelay();
 		this->mtx.unlock();
+		std::this_thread::sleep_for(std::chrono::duration<double>(this->delayPerExec));
 	}
 
 }
@@ -71,20 +69,18 @@ void Core::runRR()
 		if (this->hasAttachedProcess())
 		{
 			if (!this->finishedQuantumCycle()
-				&& this->attachedProcess->getState() == Process::RUNNING &&
-				this->currentTickDelay >= this->tickDelay)
+				&& this->attachedProcess->getState() == Process::RUNNING)
 			{
 				this->attachedProcess->run();
 				this->quantumCycle = this->quantumCycle + 1;
 			}
-			else if (this->attachedProcess->getState() == Process::FINISHED &&
-				this->currentTickDelay >= this->tickDelay)
+			else if (this->attachedProcess->getState() == Process::FINISHED)
 			{
 				detachProcess();
 			}
 		}
-		incrementTickDelay();
 		this->mtx.unlock();
+		std::this_thread::sleep_for(std::chrono::duration<double>(this->delayPerExec));
 	}
 }
 
@@ -113,7 +109,7 @@ void Core::resetTickDelay()
 
 void Core::incrementTickDelay()
 {
-	if (this->currentTickDelay >= this->tickDelay)
+	if (this->currentTickDelay >= this->delayPerExec)
 	{
 		resetTickDelay();
 		return;

@@ -9,7 +9,7 @@ std::mutex Scheduler::mtx;
 
 // Initialize the shared instance of the Scheduler
 void Scheduler::initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-    unsigned int delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq) {
+    double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq) {
     if (!sharedInstance)
     {
         sharedInstance = new Scheduler(scheduleAlgo, quantumCycleMax, numCores, delayPerExec, minInstructions, maxInstruction, batchProcessFreq);
@@ -46,7 +46,7 @@ Scheduler* Scheduler::getInstance()
 
 // Constructor for Scheduler
 Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-    unsigned int delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq) : isRunning(true)
+    double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq) : isRunning(true)
 {
     // Initialize the cores
     for (int i = 0; i < numCores; i++)
