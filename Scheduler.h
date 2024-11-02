@@ -30,18 +30,9 @@ public:
 
     std::vector<std::shared_ptr<Process>>& getAllProcess();
 
-    // debugging delete later
     int getSize();
     int numCores();
 
-    // for the config.txt, delete later
-    void setNumCores(int num);
-    void setSchedulerType(const std::string& type);
-    void setQuantumCycles(int quantum);
-    void setBatchProcessFreq(int freq);
-    void setMinInstructions(int minIns);
-    void setMaxInstructions(int maxIns);
-    void setDelayPerExec(int delay);
     void schedulerTest();
     void schedulerStop();
     void schedulerTestLoop();
@@ -62,10 +53,9 @@ private:
     Scheduler(const Scheduler&) = delete;
     Scheduler& operator=(const Scheduler&) = delete;
 
+    bool isRunning;
     ScheduleAlgo scheduleAlgo;
-
     unsigned int quantumCycleMax;
-
     unsigned int batchProcessFreq;      
     unsigned int minInstructions;       
     unsigned int maxInstructions;       
@@ -91,9 +81,4 @@ private:
     void roundRobin();
 
     void sortReadyQueue();
-
-    bool isRunning;
-    void runProcess(std::shared_ptr<Process> process);
-    std::string getCurrentTime(); // Get the current time
-    int getCoreId(); // Determine the core being used
 };

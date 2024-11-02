@@ -187,64 +187,6 @@ std::vector<std::shared_ptr<Process>>& Scheduler::getAllProcess()
     return this->allProcesses;
 }
 
-
-
-// Setter methods, for the config.txt, delete later if not necessary 
-
-void Scheduler::setNumCores(int num) {
-    this->cores.resize(num); // Resize the cores vector
-    //debugging purposes, delete later
-    std::cout << "Number of Cores Set to: " << num << std::endl; 
-}
-
-void Scheduler::setSchedulerType(const std::string& type) {
-    if (type == "fcfs") {
-        this->scheduleAlgo = FCFS; // Set to FCFS scheduling
-        //debugging purposes, delete later
-        std::cout << "Scheduler Type Set to: FCFS" << scheduleAlgo << std::endl;
-    }
-    else if (type == "rr") {
-        this->scheduleAlgo = RR; // Set to Round Robin scheduling
-        //debugging purposes, delete later
-        std::cout << "Scheduler Type Set to: Round Robin" << scheduleAlgo << std::endl;
-    }
-    
-}
-
-void Scheduler::setQuantumCycles(int quantum) {
-    this->quantumCycleMax = quantum; // Set quantum cycle max
-    // Debugging output
-    std::cout << "Quantum Cycles Set to: " << quantum << std::endl;
-}
-
-void Scheduler::setBatchProcessFreq(int freq) {
-    
-    this->batchProcessFreq = freq;
-    // Debugging output
-    std::cout << "Batch Process Frequency Set to: " << freq << std::endl;
-}
-
-void Scheduler::setMinInstructions(int minIns) {
-    
-    this->minInstructions = minIns;
-    // Debugging output
-    std::cout << "Minimum Instructions Set to: " << minIns << std::endl;
-}
-
-void Scheduler::setMaxInstructions(int maxIns) {
-    
-     this->maxInstructions = maxIns;
-     // Debugging output
-     std::cout << "Maximum Instructions Set to: " << maxIns << std::endl;
-}
-
-void Scheduler::setDelayPerExec(int delay) {
-    
-     this->delayPerExec = delay;
-     // Debugging output
-     std::cout << "Delay Per Execution Set to: " << delay << std::endl;
-}
-
 void Scheduler::schedulerTest()
 {
     std::lock_guard<std::mutex> lock(mtx);

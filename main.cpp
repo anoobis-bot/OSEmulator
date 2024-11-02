@@ -10,7 +10,7 @@
 #include <chrono> 
 #include <thread> 
 
-void readConfigAndInitializeScheduler() {
+bool readConfigAndInitializeScheduler() {
     try {
         std::ifstream configFile("config.txt");
         if (!configFile) {
@@ -18,76 +18,128 @@ void readConfigAndInitializeScheduler() {
         }
 
         std::string param;
-        ScheduleAlgo scheduleAlgo; 
-        int numCores;  
-        unsigned int quantumCycles;
-        unsigned int delayPerExec;  
-        unsigned int minInstructions; 
-        unsigned int maxInstructions;
-		unsigned int batchProcessFreq;
+        ScheduleAlgo scheduleAlgo;
+        int numCores = 0;
+        unsigned int quantumCycles = 0;
+        unsigned int delayPerExec = 0;
+        unsigned int minInstructions = 0;
+        unsigned int maxInstructions = 0;
+        unsigned int batchProcessFreq = 0;
 
-		std::cout << "Scheduler Configuration:" << std::endl;
+        const unsigned long long maxValue = 4294967296; // 2^32
+        bool isValid = true; // Flag to track if all parameters are valid
+
+        std::cout << "Scheduler Configuration:" << std::endl;
+
         // Reading the config file
         while (configFile >> param) {
             if (param == "scheduler") {
                 std::string schedulerType;
                 configFile >> schedulerType;
 
-				std::cout << "Scheduler type: ";
+                std::cout << "Scheduler type: ";
                 if (schedulerType == "\"rr\"") {
                     scheduleAlgo = RR;
-					std::cout << "Round Robin" << std::endl;
+                    std::cout << "Round Robin" << std::endl;
                 }
                 else if (schedulerType == "\"fcfs\"") {
                     scheduleAlgo = FCFS;
-					std::cout << "FCFS" << std::endl;
+                    std::cout << "FCFS" << std::endl;
+                }
+                else {
+                    throw std::runtime_error("Invalid scheduler type in config.txt.");
                 }
             }
             else {
-                int value;
+                unsigned long long value; // Use unsigned long long to accommodate large values
                 configFile >> value;
 
                 if (param == "num-cpu") {
-                    numCores = value;
-					std::cout << "Number of CPUs: " << numCores << std::endl;
+                    if (value < 1 || value > 128) {
+                        std::cerr << "Error: Number of CPUs must be in the range [1, 128]." << std::endl;
+                        isValid = false;
+                    }
+                    else {
+                        numCores = static_cast<int>(value);
+                        std::cout << "Number of CPUs: " << numCores << std::endl;
+                    }
                 }
                 else if (param == "quantum-cycles") {
-                    quantumCycles = value;
-					std::cout << "Quantum Cycles: " << quantumCycles << std::endl;
+                    if (value < 1 || value >= maxValue) {
+                        std::cerr << "Error: Quantum Cycles must be in the range [1, 2^32)." << std::endl;
+                        isValid = false;
+                    }
+                    else {
+                        quantumCycles = static_cast<unsigned int>(value);
+                        std::cout << "Quantum Cycles: " << quantumCycles << std::endl;
+                    }
                 }
                 else if (param == "batch-process-freq") {
-                    batchProcessFreq = value;
-					std::cout << "Batch Process Frequency: " << batchProcessFreq << std::endl;
+                    if (value < 1 || value >= maxValue) {
+                        std::cerr << "Error: Batch Process Frequency must be in the range [1, 2^32)." << std::endl;
+                        isValid = false;
+                    }
+                    else {
+                        batchProcessFreq = static_cast<unsigned int>(value);
+                        std::cout << "Batch Process Frequency: " << batchProcessFreq << std::endl;
+                    }
                 }
                 else if (param == "delay-per-exec") {
-                    delayPerExec = value;
-					std::cout << "Delay Per Execution: " << delayPerExec << std::endl;
+                    if (value < 0 || value >= maxValue) {
+                        std::cerr << "Error: Delay Per Execution must be in the range [0, 2^32)." << std::endl;
+                        isValid = false;
+                    }
+                    else {
+                        delayPerExec = static_cast<unsigned int>(value);
+                        std::cout << "Delay Per Execution: " << delayPerExec << std::endl;
+                    }
                 }
                 else if (param == "min-ins") {
-                    minInstructions = value;
-					std::cout << "Minimum Instructions: " << minInstructions << std::endl;
+                    if (value < 1 || value >= maxValue) {
+                        std::cerr << "Error: Minimum Instructions must be in the range [1, 2^32)." << std::endl;
+                        isValid = false;
+                    }
+                    else {
+                        minInstructions = static_cast<unsigned int>(value);
+                        std::cout << "Minimum Instructions: " << minInstructions << std::endl;
+                    }
                 }
                 else if (param == "max-ins") {
-                    maxInstructions = value;
-					std::cout << "Maximum Instructions: " << maxInstructions << std::endl;
+                    if (value < 1 || value >= maxValue) {
+                        std::cerr << "Error: Maximum Instructions must be in the range [1, 2^32)." << std::endl;
+                        isValid = false;
+                    }
+                    else {
+                        maxInstructions = static_cast<unsigned int>(value);
+                        std::cout << "Maximum Instructions: " << maxInstructions << std::endl;
+                    }
                 }
                 else {
-                    std::cout << "Unknown parameter in config.txt: " << param << std::endl;
+                    std::cerr << "Unknown parameter in config.txt: " << param << std::endl;
                 }
             }
         }
 
-        // Initialize the Scheduler
-        Scheduler::initialize(scheduleAlgo, quantumCycles, numCores, delayPerExec, minInstructions, maxInstructions, batchProcessFreq);
+        // Initialize the Scheduler only if all parameters are valid
+        if (isValid) {
+            Scheduler::initialize(scheduleAlgo, quantumCycles, numCores, delayPerExec, minInstructions, maxInstructions, batchProcessFreq);
+            std::cout << "Scheduler initialized successfully." << std::endl;
+            return true; 
+        }
+        else {
+            std::cerr << "Scheduler initialization failed." << std::endl;
+            return false; 
+        }
     }
     catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
+        return false; 
     }
 }
 
 int main()
 {
-    bool isInitialized = false; 
+    bool isInitialized = false;
     bool running = false;
     printHeaderMain("3D_CSOPESY.txt");
 
@@ -100,9 +152,13 @@ int main()
         if (command == "initialize")
         {
             ConsoleManager::initialize();
-            readConfigAndInitializeScheduler();
-            running = true;       
-            isInitialized = true;
+            if (readConfigAndInitializeScheduler()) { 
+                running = true;
+                isInitialized = true;
+            }
+            else {
+                ConsoleManager::destroy(); 
+            }
             std::cin.ignore();
         }
         else if (command == "exit")
