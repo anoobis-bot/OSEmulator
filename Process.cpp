@@ -14,7 +14,7 @@ Process::Process(String processName, int id, int totalInstructions ,PrintCommand
 	this->totalInstructions = totalInstructions;
 	this->currentInstruction = 0;
 
-	this->openLogFile();
+	//this->openLogFile();
 }
 
 void Process::run()
@@ -22,14 +22,14 @@ void Process::run()
 	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
 	// print something
 	this->command.run();
-	this->logPrintCommand(this->command.getToPrint());
+	//this->logPrintCommand(this->command.getToPrint());
 
 	this->currentInstruction = currentInstruction + 1;
 	if (currentInstruction >= totalInstructions)
 	{
 		this->processState = FINISHED;
-		ConsoleManager::getInstance()->unregisterScreen(this->processName);
-		this->closeLogFile();
+		//ConsoleManager::getInstance()->unregisterScreen(this->processName);
+		//this->closeLogFile();
 	}
 
 	//std::this_thread::sleep_for(std::chrono::milliseconds(300));
