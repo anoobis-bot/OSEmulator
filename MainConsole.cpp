@@ -19,6 +19,8 @@
 
 extern ConsoleManager consoleManager;
 
+std::mutex MainConsole::mtx;
+
 MainConsole::MainConsole() : AConsole("MAIN_CONSOLE")
 {
 }
@@ -102,17 +104,18 @@ void MainConsole::handleCommand(String command)
             else
             {
                 std::cout << "Running Processes:\n";
-             
+				
                 for (const std::shared_ptr<Process>& process : allProcesses)
                 {
-                    if (process->getCoreID() != -1 && process->getState() != Process::FINISHED)
-                    {
-                        std::cout << std::left << std::setw(25) << process->getName()  
-                            << std::setw(30) << process->getFormattedTime()
-                            << "Core:" << process->getCoreID() << '\t'
-                            << '\t' << process->getCurrentInstruction() << "/"
-                            << process->getTotalInstructions() << '\n';
-                    }
+                    process->printInfo();
+                    //if (process->getCoreID() != -1 && process->getState() != Process::FINISHED)
+                    //{
+                    //    std::cout << std::left << std::setw(25) << process->getName()  
+                    //        << std::setw(30) << process->getFormattedTime()
+                    //        << "Core:" << process->getCoreID() << '\t'
+                    //        << '\t' << process->getCurrentInstruction() << "/"
+                    //        << process->getTotalInstructions() << '\n';
+                    //}
                 }
                 
                 std::cout << "\nFinished Processes:\n";

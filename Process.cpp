@@ -32,16 +32,18 @@ void Process::run()
 		//this->closeLogFile();
 	}
 
-	//std::this_thread::sleep_for(std::chrono::milliseconds(300));
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 void Process::setCoreID(int coreID)
 {
+	//std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
 	this->inCoreID = coreID;
 }
 
 int Process::getCoreID()
 {
+	//std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
 	return this->inCoreID;
 }
 
@@ -86,6 +88,19 @@ void Process::readyState()
 void Process::finishState()
 {
 	this->processState = FINISHED;
+}
+
+void Process::printInfo()
+{
+	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
+	if (this->getCoreID() != -1 && this->processState != Process::FINISHED)
+	{
+		std::cout << std::left << std::setw(25) << this->getName()
+			<< std::setw(30) << this->getFormattedTime()
+			<< "Core:" << this->getCoreID() << '\t'
+			<< '\t' << this->getCurrentInstruction() << "/"
+			<< this->getTotalInstructions() << '\n';
+	}
 }
 
 String Process::getFormattedTime() {

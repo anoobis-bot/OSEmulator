@@ -19,5 +19,7 @@ public:
 private:
 	void displayHeader();
 	void handleCommand(String command);
+
+	static std::mutex mtx;
 };
 

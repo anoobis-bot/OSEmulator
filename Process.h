@@ -38,6 +38,8 @@ public:
 	void logPrintCommand(const std::string& command);
 	void closeLogFile();
 
+	void printInfo();
+
 private:
 	String processName;
 	std::chrono::system_clock::time_point creationTime;
