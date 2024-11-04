@@ -85,6 +85,7 @@ void MainConsole::handleCommand(String command)
 
         else if (screenCommand == "-ls")
         {
+            std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
             std::cout << "CPU Utilization: "
                 << std::fixed << std::setprecision(2)
                 << Scheduler::getInstance()->getCPUUtilization() * 100  
@@ -102,10 +103,8 @@ void MainConsole::handleCommand(String command)
             else
             {
                 std::cout << "Running Processes:\n";
-				
-                for (const std::shared_ptr<Process>& process : allProcesses)
+            	for (const std::shared_ptr<Process>& process : allProcesses)
                 {
-                    std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
                     process->printInfo();
                     //if (process->getCoreID() != -1 && process->getState() != Process::FINISHED)
                     //{
