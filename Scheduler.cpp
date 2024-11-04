@@ -149,7 +149,7 @@ void Scheduler::run()
 // Add a new process to the ready queue
 void Scheduler::addNewProcess(std::shared_ptr<Process> process)
 {
-    std::lock_guard<std::mutex> lock(mtx); // Uncomment for thread safety
+    // std::lock_guard<std::mutex> lock(mtx); // Uncomment for thread safety
     this->readyQueue.push_back(process);
     this->allProcesses.push_back(process);
 }
