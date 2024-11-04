@@ -92,7 +92,7 @@ void Process::finishState()
 
 void Process::printInfo()
 {
-	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
+	//std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
 	if (this->getCoreID() != -1 && this->processState != Process::FINISHED)
 	{
 		std::cout << std::left << std::setw(25) << this->getName()

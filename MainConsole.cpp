@@ -19,8 +19,6 @@
 
 extern ConsoleManager consoleManager;
 
-std::mutex MainConsole::mtx;
-
 MainConsole::MainConsole() : AConsole("MAIN_CONSOLE")
 {
 }
@@ -107,6 +105,7 @@ void MainConsole::handleCommand(String command)
 				
                 for (const std::shared_ptr<Process>& process : allProcesses)
                 {
+                    std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
                     process->printInfo();
                     //if (process->getCoreID() != -1 && process->getState() != Process::FINISHED)
                     //{
