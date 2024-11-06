@@ -4,7 +4,7 @@
 #include "ConsoleManager.h"
 #include "PrintCommand.h"
 
-Process::Process(String processName, int id, int totalInstructions ,PrintCommand command) : creationTime(std::chrono::system_clock::now()), command(command)
+Process::Process(String processName, int id, int totalInstructions ,PrintCommand command, size_t memoryRequired) : creationTime(std::chrono::system_clock::now()), command(command)
 {
 	this->processName = processName;
 	this->processState = READY;
@@ -13,6 +13,9 @@ Process::Process(String processName, int id, int totalInstructions ,PrintCommand
 	this->command = command;
 	this->totalInstructions = totalInstructions;
 	this->currentInstruction = 0;
+
+	this->memoryRequired = memoryRequired;
+	this->inMemory = false;
 
 	//this->openLogFile();
 }
@@ -89,6 +92,23 @@ void Process::finishState()
 {
 	this->processState = FINISHED;
 }
+
+size_t Process::getMemoryRequired()
+{
+	return this->memoryRequired;
+}
+
+bool Process::isInMemory()
+{
+	return this->inMemory;
+}
+
+void Process::setInMemory(bool inMemory)
+{
+	this->inMemory = inMemory;
+}
+
+
 
 void Process::printInfo()
 {

@@ -10,6 +10,8 @@
 #include <chrono> 
 #include <thread> 
 
+#include "MemoryManager.h"
+
 bool readConfigAndInitializeScheduler() {
     try {
         std::ifstream configFile("config.txt");
@@ -153,7 +155,8 @@ int main()
         {
             ConsoleManager::initialize();
             if (readConfigAndInitializeScheduler()) { 
-                running = true;
+                MemoryManager::initialize(1024, 16);
+            	running = true;
                 isInitialized = true;
             }
             else {

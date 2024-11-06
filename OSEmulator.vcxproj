@@ -134,6 +134,7 @@
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="MainConsole.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="PrintCommand.cpp" />
     <ClCompile Include="Process.cpp" />
     <ClCompile Include="Scheduler.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="ConsoleManager.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="MainConsole.h" />
+    <ClInclude Include="MemoryManager.h" />
     <ClInclude Include="PrintCommand.h" />
     <ClInclude Include="Process.h" />
     <ClInclude Include="ScheduleAlgo.h" />
@@ -154,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="3D_CSOPESY.txt" />
+    <Text Include="config.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

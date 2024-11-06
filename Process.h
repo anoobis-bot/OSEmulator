@@ -9,7 +9,7 @@
 class Process
 {
 public:
-	Process(String processName, int id, int totalInstructions, PrintCommand command);
+	Process(String processName, int id, int totalInstructions, PrintCommand command, size_t memoryRequired);
 	String getName() const;
 	int getCurrentInstruction();
 	int getTotalInstructions();
@@ -40,6 +40,10 @@ public:
 
 	void printInfo();
 
+	size_t getMemoryRequired();
+	bool isInMemory();
+	void setInMemory(bool inMemory);
+
 private:
 	String processName;
 	std::chrono::system_clock::time_point creationTime;
@@ -54,6 +58,9 @@ private:
 	state processState;
 	int id;
 	int inCoreID;
+
+	size_t memoryRequired;
+	bool inMemory;
 
 	std::mutex mtx;
 

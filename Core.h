@@ -22,6 +22,8 @@ public:
 
 	void resetTickDelay();
 
+	void detachProcess();
+
 private:
 	std::mutex mtx;
 
@@ -30,8 +32,6 @@ private:
 	int coreID;
 
 	void incrementTickDelay();
-
-	void detachProcess();
 
 	unsigned int quantumCycle;
 	unsigned int quantumCycleMax;

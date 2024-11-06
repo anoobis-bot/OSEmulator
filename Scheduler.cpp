@@ -4,6 +4,8 @@
 #include <memory>
 #include <random>
 
+#include "MemoryManager.h"
+
 Scheduler* Scheduler::sharedInstance = nullptr;
 std::mutex Scheduler::mtx;
 
@@ -119,6 +121,20 @@ void Scheduler::roundRobin()
             core->getAttachedProcess()->readyState();
             reAddProcess(core->getAttachedProcess());
         }
+
+        while (!getFirstProcess()->isInMemory())
+        {
+            if(MemoryManager::getInstance()->allocate(getFirstProcess()->getID(), getFirstProcess()->getMemoryRequired()))
+            {
+                getFirstProcess()->setInMemory(true);
+            }
+            else
+            {
+                reAddProcess(getFirstProcess());
+                removeFirstProcess();
+            }
+        }
+
         core->attachProcess(this->getFirstProcess());
         core->resetQuantumCycle();
         core->resetTickDelay();
@@ -238,7 +254,8 @@ void Scheduler::createProcess(int processID)
 
     std::string processName = "Process_" + std::to_string(processID).substr(0, 2);
     String toPrint = "Hello world from " + processName;
-    auto process = std::make_shared<Process>(processName, processID, totalinstructions, PrintCommand(toPrint));
+    //TODO set mem per proc in config.txt
+    auto process = std::make_shared<Process>(processName, processID, totalinstructions, PrintCommand(toPrint), 256);
     auto processScreen = std::make_shared<BaseScreen>(process, processName);
     ConsoleManager::getInstance()->registerScreen(processScreen);
 	addNewProcess(process);

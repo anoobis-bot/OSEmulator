@@ -1,5 +1,7 @@
 #include "Core.h"
 
+#include "MemoryManager.h"
+
 Core::Core(double delayPerExec, int coreID, ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax)
 {
 	this->delayPerExec = delayPerExec;
@@ -76,6 +78,8 @@ void Core::runRR()
 			}
 			else if (this->attachedProcess->getState() == Process::FINISHED)
 			{
+				MemoryManager::getInstance()->deallocate(attachedProcess->getID(), attachedProcess->getMemoryRequired());
+				attachedProcess->setInMemory(false);
 				detachProcess();
 			}
 		}
