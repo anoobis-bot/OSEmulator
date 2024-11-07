@@ -2,11 +2,11 @@
 
 MemoryManager* MemoryManager::sharedInstance = nullptr;
 
-void MemoryManager::initialize(size_t memSize, size_t memPerFrame)
+void MemoryManager::initialize(size_t memSize, size_t memPerFrame, size_t memPerProc)
 {
     if (!sharedInstance)
     {
-        sharedInstance = new MemoryManager(memSize, memPerFrame);
+        sharedInstance = new MemoryManager(memSize, memPerFrame, memPerProc);
     }
 }
 
@@ -15,9 +15,10 @@ MemoryManager* MemoryManager::getInstance()
     return sharedInstance;
 }
 
-MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame)
+MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame, size_t memPerProc)
 {
     this->memPerFrame = memPerFrame;
+	this->memPerProc = memPerProc;
 
 	memory = std::vector<char>(memSize, '.');
     numFrames = sizeToFrame(memSize);

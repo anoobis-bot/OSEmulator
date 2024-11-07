@@ -388,7 +388,7 @@ void Scheduler::memoryReport(int counter) {
         if (frame.second.first) {
             reportFile << currentAddress << "\n";
             reportFile << "P" << frame.second.second << "\n";
-            currentAddress -= MemoryManager::getInstance()->getMemPerFrame();
+            currentAddress -= MemoryManager::getInstance()->getMemPerProc();
             reportFile << currentAddress << "\n";
         }
     }

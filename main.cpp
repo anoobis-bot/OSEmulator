@@ -140,7 +140,7 @@ bool readConfigAndInitializeScheduler() {
         // Initialize the Scheduler only if all parameters are valid
         if (isValid) {
             Scheduler::initialize(scheduleAlgo, quantumCycles, numCores, delayPerExec, minInstructions, maxInstructions, batchProcessFreq, memPerProc);
-            MemoryManager::initialize(maxOverallMem, memPerFrame);
+            MemoryManager::initialize(maxOverallMem, memPerFrame, memPerProc);
             std::cout << " Emulator initialized successfully." << std::endl;
             return true; 
         }

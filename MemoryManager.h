@@ -7,7 +7,7 @@
 class MemoryManager
 {
 public:
-	static void initialize(size_t memSize, size_t memPerFrame);
+	static void initialize(size_t memSize, size_t memPerFrame, size_t memPerProc);
 	static MemoryManager* getInstance();
 
 	bool allocate(int pid, size_t size);
@@ -22,7 +22,7 @@ public:
 
 private: 
 	// Singleton Members
-	MemoryManager(size_t memSize, size_t memPerFrame);
+	MemoryManager(size_t memSize, size_t memPerFrame, size_t memPerProc);
 	static MemoryManager* sharedInstance;
 
 	// Memory
