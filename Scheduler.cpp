@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <memory>
 #include <random>
+#include <unordered_set> 
 
 #include "MemoryManager.h"
 
@@ -11,10 +12,10 @@ std::mutex Scheduler::mtx;
 
 // Initialize the shared instance of the Scheduler
 void Scheduler::initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-    double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq) {
+    double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t memPerProc) {
     if (!sharedInstance)
     {
-        sharedInstance = new Scheduler(scheduleAlgo, quantumCycleMax, numCores, delayPerExec, minInstructions, maxInstruction, batchProcessFreq);
+        sharedInstance = new Scheduler(scheduleAlgo, quantumCycleMax, numCores, delayPerExec, minInstructions, maxInstruction, batchProcessFreq, memPerProc);
     }
 }
 
@@ -48,7 +49,7 @@ Scheduler* Scheduler::getInstance()
 
 // Constructor for Scheduler
 Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-    double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq) : isRunning(true)
+    double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t memPerProc) : isRunning(true)
 {
     // Initialize the cores
     for (int i = 0; i < numCores; i++)
@@ -62,6 +63,7 @@ Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, in
 	this->minInstructions = minInstructions;
 	this->maxInstructions = maxInstruction;
 	this->batchProcessFreq = batchProcessFreq;
+    this->memPerProc = memPerProc;
 
     // Start the worker thread
     this->workerThread = std::thread(&Scheduler::run, this);
@@ -97,7 +99,8 @@ void Scheduler::firstComeFirstServe()
 
 // Round Robin scheduling method
 void Scheduler::roundRobin()
-{
+{   
+    static int quantumCycleCounter = 0;
     // Check each core for attached processes and assign empty cores.
     for (Core* core : cores)
     {
@@ -142,6 +145,13 @@ void Scheduler::roundRobin()
         this->getFirstProcess()->runningState();
         this->removeFirstProcess();
         mtx.unlock(); // Unlock mutex
+    }
+
+    quantumCycleCounter++;
+
+    if (quantumCycleCounter % 4000 == 0) {  
+        quantumCycleCounter = quantumCycleCounter / 4000;
+        memoryReport(quantumCycleCounter);  
     }
 }
 
@@ -255,7 +265,7 @@ void Scheduler::createProcess(int processID)
     std::string processName = "Process_" + std::to_string(processID).substr(0, 2);
     String toPrint = "Hello world from " + processName;
     //TODO set mem per proc in config.txt
-    auto process = std::make_shared<Process>(processName, processID, totalinstructions, PrintCommand(toPrint), 256);
+    auto process = std::make_shared<Process>(processName, processID, totalinstructions, PrintCommand(toPrint), memPerProc);
     auto processScreen = std::make_shared<BaseScreen>(process, processName);
     ConsoleManager::getInstance()->registerScreen(processScreen);
 	addNewProcess(process);
@@ -309,4 +319,68 @@ unsigned int Scheduler::getMinInstructions()
 unsigned int Scheduler::getMaxInstructions()
 {
 	return maxInstructions;
+}
+
+size_t Scheduler::getMemPerProc()
+{
+    return memPerProc;
+}
+
+void Scheduler::memoryReport(int counter) {
+    // Get timestamp
+    auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+    // Create the filename
+    std::ostringstream fileName;
+    fileName << "memory_stamp_" << counter << ".txt";
+
+    std::ofstream reportFile(fileName.str());
+
+    if (!reportFile.is_open()) {
+        std::cerr << "Could not open file " << fileName.str() << " for writing.\n";
+        return;
+    }
+
+    // Convert to local time using localtime_s
+    std::tm localTime;
+    localtime_s(&localTime, &in_time_t);
+
+    // Write timestamp to file
+    reportFile << "Timestamp: " << std::put_time(&localTime, "%Y-%m-%d %X") << "\n";
+
+    // Calculate the number of processes in memory
+    std::unordered_set<int> uniqueProcesses;
+
+    for (auto const& frame : MemoryManager::getInstance()->getAllocationMap()) {
+        if (frame.second.first) {  // If the frame is allocated
+            uniqueProcesses.insert(frame.second.second);  // Insert the process id into the set
+        }
+    }
+
+    int numProcesses = uniqueProcesses.size();
+    reportFile << "Number of processes in memory: " << numProcesses << "\n";
+
+    // Calculate external fragmentation
+    size_t externalFragmentation = 0;
+    bool isFragmenting = false;
+    for (auto const& frame : MemoryManager::getInstance()->getAllocationMap()) {
+        if (frame.second.first == false) {  // If the frame is free
+            if (!isFragmenting) {
+                isFragmenting = true;
+            }
+            externalFragmentation += MemoryManager::getInstance()->getMemPerFrame();
+        }
+        else {
+            isFragmenting = false;
+        }
+    }
+
+    reportFile << "Total external fragmentation in KB: " << externalFragmentation / 1024 << "\n\n";
+
+    // ASCII printout of memory
+    reportFile << "----end---- = " << MemoryManager::getInstance()->getMemorySize() << "\n\n";
+
+    reportFile << "----start---- = 0\n";
+    reportFile.close();
 }

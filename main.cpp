@@ -27,6 +27,9 @@ bool readConfigAndInitializeScheduler() {
         unsigned int minInstructions = 0;
         unsigned int maxInstructions = 0;
         unsigned int batchProcessFreq = 0;
+        size_t maxOverallMem = 0;
+        size_t memPerFrame = 0;
+        size_t memPerProc = 0;
 
         const unsigned long long maxValue = 4294967296; // 2^32
         bool isValid = true; // Flag to track if all parameters are valid
@@ -116,6 +119,18 @@ bool readConfigAndInitializeScheduler() {
                         std::cout << "Maximum Instructions: " << maxInstructions << std::endl;
                     }
                 }
+                else if (param == "max-overall-mem") {
+                    maxOverallMem = value;
+                    std::cout << "Max Overall Memory: " << maxOverallMem << std::endl;
+                }
+                else if (param == "mem-per-frame") {
+                    memPerFrame = value;
+                    std::cout << "Memory per Frame: " << memPerFrame << std::endl;
+                }
+                else if (param == "mem-per-proc") {
+                    memPerProc = value;
+                    std::cout << "Memory per process: " << memPerProc << std::endl;
+                }
                 else {
                     std::cerr << "Unknown parameter in config.txt: " << param << std::endl;
                 }
@@ -124,12 +139,13 @@ bool readConfigAndInitializeScheduler() {
 
         // Initialize the Scheduler only if all parameters are valid
         if (isValid) {
-            Scheduler::initialize(scheduleAlgo, quantumCycles, numCores, delayPerExec, minInstructions, maxInstructions, batchProcessFreq);
-            std::cout << "Scheduler initialized successfully." << std::endl;
+            Scheduler::initialize(scheduleAlgo, quantumCycles, numCores, delayPerExec, minInstructions, maxInstructions, batchProcessFreq, memPerProc);
+            MemoryManager::initialize(maxOverallMem, memPerFrame);
+            std::cout << " Emulator initialized successfully." << std::endl;
             return true; 
         }
         else {
-            std::cerr << "Scheduler initialization failed." << std::endl;
+            std::cerr << "Emulator initialization failed." << std::endl;
             return false; 
         }
     }
@@ -155,7 +171,6 @@ int main()
         {
             ConsoleManager::initialize();
             if (readConfigAndInitializeScheduler()) { 
-                MemoryManager::initialize(1024, 16);
             	running = true;
                 isInitialized = true;
             }

@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "Process.h"
 
 class MemoryManager
 {
@@ -13,6 +14,12 @@ public:
 	void deallocate(int pid, size_t size);
 	bool canAllocate(size_t size, size_t* frameIndex);
 
+	size_t getnNumFrames();
+	size_t getMemorySize();
+	size_t getMemPerFrame();
+	size_t getMemPerProc();
+	const std::unordered_map<size_t, std::pair<bool, int>>& getAllocationMap() const;
+
 private: 
 	// Singleton Members
 	MemoryManager(size_t memSize, size_t memPerFrame);
@@ -21,7 +28,9 @@ private:
 	// Memory
 	std::vector<char> memory;
 	std::unordered_map<size_t, std::pair<bool, int>> allocationMap;
+	size_t maxOverallMem = 0;
 	size_t memPerFrame = 0;
+	size_t memPerProc = 0;
 	size_t numFrames = 0;
 
 	size_t sizeToFrame(size_t size);

@@ -87,6 +87,22 @@ void MemoryManager::deallocate(int pid, size_t size)
 	}
 }
 
+const std::unordered_map<size_t, std::pair<bool, int>>& MemoryManager::getAllocationMap() const {
+	return allocationMap;
+}
 
+size_t MemoryManager::getMemorySize() {
+	return memory.size();
+}
 
+size_t MemoryManager::getMemPerFrame() {
+	return memPerFrame;
+}
 
+size_t MemoryManager::getMemPerProc() {
+	return memPerProc;
+}
+
+size_t MemoryManager::getnNumFrames() {
+	return numFrames;
+}

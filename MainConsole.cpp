@@ -149,7 +149,7 @@ void MainConsole::handleCommand(String command)
                 int totalinstructions = dis(gen);
                 // Register new process and switch to the screen
                 String toPrint = "Hello world from " + processName;
-                auto process = std::make_shared<Process>(processName, Scheduler::getInstance()->getAllProcess().size(), totalinstructions, PrintCommand(toPrint), 4096);
+                auto process = std::make_shared<Process>(processName, Scheduler::getInstance()->getAllProcess().size(), totalinstructions, PrintCommand(toPrint), Scheduler::getInstance()->getMemPerProc());
                 auto processScreen = std::make_shared<BaseScreen>(process, processName);
 
                 Scheduler::getInstance()->addNewProcess(process);

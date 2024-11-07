@@ -17,7 +17,7 @@ class Scheduler {
 public:
 
 	static void initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-        double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq);
+        double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t memPerProc);
 
     static Scheduler* getInstance();
 
@@ -40,13 +40,16 @@ public:
     int getAvailableCores();
     float getCPUUtilization();
     int getNumberOfCoresUsed();
+    size_t getMemPerProc();
+
+    void memoryReport(int counter);
 
 	unsigned int getMinInstructions();
 	unsigned int getMaxInstructions();
 
 private:
     Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-        double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq);
+        double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t memPerProc);
     ~Scheduler();
 
     // Disable copying and assignment
@@ -60,6 +63,7 @@ private:
     unsigned int minInstructions;       
     unsigned int maxInstructions;       
     double delayPerExec;
+    size_t memPerProc = 0;
     bool schedulerTestFlag = false;
     std::condition_variable cv;
 
