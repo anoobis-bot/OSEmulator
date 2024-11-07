@@ -1,5 +1,5 @@
 #include "Core.h"
-
+#include "Scheduler.h"
 #include "MemoryManager.h"
 
 Core::Core(double delayPerExec, int coreID, ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax)
@@ -74,6 +74,7 @@ void Core::runRR()
 				&& this->attachedProcess->getState() == Process::RUNNING)
 			{
 				this->attachedProcess->run();
+				Scheduler::getInstance()->memoryReport(this->quantumCycle);  // Pass quantumCycle as counter
 				this->quantumCycle = this->quantumCycle + 1;
 			}
 			else if (this->attachedProcess->getState() == Process::FINISHED)
@@ -83,6 +84,7 @@ void Core::runRR()
 				detachProcess();
 			}
 		}
+		
 		this->mtx.unlock();
 		std::this_thread::sleep_for(std::chrono::duration<double>(this->delayPerExec));
 	}
