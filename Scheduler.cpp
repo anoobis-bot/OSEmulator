@@ -381,6 +381,18 @@ void Scheduler::memoryReport(int counter) {
     // ASCII printout of memory
     reportFile << "----end---- = " << MemoryManager::getInstance()->getMemorySize() << "\n\n";
 
+    // For each allocated frame, print process limits
+    //nagpriprint lang sya sa 1 file
+    size_t currentAddress = MemoryManager::getInstance()->getMemorySize();
+    for (auto const& frame : MemoryManager::getInstance()->getAllocationMap()) {
+        if (frame.second.first) {
+            reportFile << currentAddress << "\n";
+            reportFile << "P" << frame.second.second << "\n";
+            currentAddress -= MemoryManager::getInstance()->getMemPerFrame();
+            reportFile << currentAddress << "\n";
+        }
+    }
+
     reportFile << "----start---- = 0\n";
     reportFile.close();
 }
