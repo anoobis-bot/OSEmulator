@@ -146,13 +146,6 @@ void Scheduler::roundRobin()
         this->removeFirstProcess();
         mtx.unlock(); // Unlock mutex
     }
-
-    quantumCycleCounter++;
-
-    if (quantumCycleCounter % 4000 == 0) {  
-        quantumCycleCounter = quantumCycleCounter / 4000;
-        memoryReport(quantumCycleCounter);  
-    }
 }
 
 // Main run loop for the scheduler
@@ -376,7 +369,7 @@ void Scheduler::memoryReport(int counter) {
         }
     }
 
-    reportFile << "Total external fragmentation in KB: " << externalFragmentation / 1024 << "\n\n";
+    reportFile << "Total external fragmentation in KB: " << externalFragmentation << "\n\n";
 
     // ASCII printout of memory
     reportFile << "----end---- = " << MemoryManager::getInstance()->getMemorySize() << "\n\n";
