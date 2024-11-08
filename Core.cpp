@@ -74,7 +74,6 @@ void Core::runRR()
 				&& this->attachedProcess->getState() == Process::RUNNING)
 			{
 				this->attachedProcess->run();
-				Scheduler::getInstance()->memoryReport(this->quantumCycle);  // Pass quantumCycle as counter
 				this->quantumCycle = this->quantumCycle + 1;
 			}
 			else if (this->attachedProcess->getState() == Process::FINISHED)

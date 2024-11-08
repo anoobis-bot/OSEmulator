@@ -144,6 +144,8 @@ void Scheduler::roundRobin()
         this->getFirstProcess()->setCoreID(core->getCoreID());
         this->getFirstProcess()->runningState();
         this->removeFirstProcess();
+        Scheduler::getInstance()->memoryReport(quantumCycleCounter);  // Pass quantumCycle as counter
+        quantumCycleCounter++;
         mtx.unlock(); // Unlock mutex
     }
 }
@@ -319,49 +321,49 @@ size_t Scheduler::getMemPerProc()
     return memPerProc;
 }
 
-void Scheduler::memoryReport(int counter) {
+void Scheduler::memoryReport(int quantumCycleCounter) {
     // Get timestamp
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-    // Create the filename
+    // Create filename with quantum cycle
     std::ostringstream fileName;
-    fileName << "memory_stamp_" << counter << ".txt";
+    fileName << "memory_stamp_" << quantumCycleCounter << ".txt";
 
     std::ofstream reportFile(fileName.str());
-
     if (!reportFile.is_open()) {
         std::cerr << "Could not open file " << fileName.str() << " for writing.\n";
         return;
     }
 
-    // Convert to local time using localtime_s
+    // Convert timestamp to local time
     std::tm localTime;
     localtime_s(&localTime, &in_time_t);
 
-    // Write timestamp to file
-    reportFile << "Timestamp: " << std::put_time(&localTime, "%Y-%m-%d %X") << "\n";
+    // Format as (mm/dd/yyyy hh:mm:ssAM/PM)
+    std::ostringstream timestamp;
+    timestamp << std::put_time(&localTime, "%m/%d/%Y %I:%M:%S")
+        << (localTime.tm_hour >= 12 ? "PM" : "AM");
 
-    // Calculate the number of processes in memory
+    reportFile << "Timestamp: (" << timestamp.str() << ")\n";
+
+    // Calculate number of unique processes in memory
     std::unordered_set<int> uniqueProcesses;
-
-    for (auto const& frame : MemoryManager::getInstance()->getAllocationMap()) {
-        if (frame.second.first) {  // If the frame is allocated
-            uniqueProcesses.insert(frame.second.second);  // Insert the process id into the set
+    for (const auto& frame : MemoryManager::getInstance()->getAllocationMap()) {
+        if (frame.second.first) {  // If frame is allocated
+            uniqueProcesses.insert(frame.second.second);  // Insert the process ID
         }
     }
 
     int numProcesses = uniqueProcesses.size();
     reportFile << "Number of processes in memory: " << numProcesses << "\n";
 
-    // Calculate external fragmentation
+    // Calculate total external fragmentation
     size_t externalFragmentation = 0;
     bool isFragmenting = false;
-    for (auto const& frame : MemoryManager::getInstance()->getAllocationMap()) {
-        if (frame.second.first == false) {  // If the frame is free
-            if (!isFragmenting) {
-                isFragmenting = true;
-            }
+    for (const auto& frame : MemoryManager::getInstance()->getAllocationMap()) {
+        if (!frame.second.first) {  // Free frame
+            if (!isFragmenting) isFragmenting = true;
             externalFragmentation += MemoryManager::getInstance()->getMemPerFrame();
         }
         else {
@@ -371,21 +373,47 @@ void Scheduler::memoryReport(int counter) {
 
     reportFile << "Total external fragmentation in KB: " << externalFragmentation << "\n\n";
 
-    // ASCII printout of memory
+    // ASCII printout of memory with boundaries
     reportFile << "----end---- = " << MemoryManager::getInstance()->getMemorySize() << "\n\n";
 
-    // For each allocated frame, print process limits
-    //nagpriprint lang sya sa 1 file
-    size_t currentAddress = MemoryManager::getInstance()->getMemorySize();
-    for (auto const& frame : MemoryManager::getInstance()->getAllocationMap()) {
-        if (frame.second.first) {
-            reportFile << currentAddress << "\n";
-            reportFile << "P" << frame.second.second << "\n";
-            currentAddress -= MemoryManager::getInstance()->getMemPerProc();
-            reportFile << currentAddress << "\n";
+    // Gather memory allocation boundaries per process
+    size_t frameSize = MemoryManager::getInstance()->getMemPerFrame();
+    size_t processBlockSize = MemoryManager::getInstance()->getMemPerProc();
+    size_t blockFrames = processBlockSize / frameSize;
+    std::vector<std::tuple<size_t, size_t, int>> boundaries;  // (upperLimit, lowerLimit, processID)
+
+    for (size_t i = 0; i < MemoryManager::getInstance()->getnNumFrames(); ) {
+        auto& frame = MemoryManager::getInstance()->getAllocationMap().at(i);
+
+        if (frame.first) {  // Frame is allocated
+            int processID = frame.second;
+
+            // Calculate memory boundaries for the process block
+            size_t lowerLimit = i * frameSize;
+            size_t upperLimit = lowerLimit + processBlockSize;
+
+            // Add the boundary information to the vector
+            boundaries.emplace_back(upperLimit, lowerLimit, processID);
+
+            // Skip frames corresponding to the block size for this process
+            i += blockFrames;
+        }
+        else {
+            ++i; // Move to the next frame if this frame is not allocated
         }
     }
 
+    // Sort boundaries by the upper address in descending order
+    std::sort(boundaries.begin(), boundaries.end(), std::greater<std::tuple<size_t, size_t, int>>());
+
+    // Print sorted memory allocation boundaries
+    for (const auto& [upper, lower, pid] : boundaries) {
+        reportFile << upper << "\n";
+        reportFile << "P" << pid << "\n";
+        reportFile << lower << "\n\n";
+    }
     reportFile << "----start---- = 0\n";
     reportFile.close();
 }
+
+
