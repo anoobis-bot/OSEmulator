@@ -16,6 +16,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <random>
+#include "MemoryManager.h"
+#include <unordered_set>
 
 extern ConsoleManager consoleManager;
 
@@ -191,6 +193,74 @@ void MainConsole::handleCommand(String command)
     {
         saveReport();
     }
+    else if (command == "process-smi")
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        auto scheduler = Scheduler::getInstance();
+        auto memoryManager = MemoryManager::getInstance();
+
+
+        std::cout << "----------------------------------------------" << std::endl;
+        std::cout << "| PROCESS-SMI V01.00 Driver Version: 01.00 |" << std::endl;
+        std::cout << "----------------------------------------------" << std::endl;
+        // Display CPU Utilization
+        double cpuUtil = scheduler->getCPUUtilization() * 100;
+        std::cout << "CPU Utilization: " << std::fixed << std::setprecision(2) << cpuUtil << "%" << std::endl;
+
+        // Display Memory Usage
+        size_t totalMemory = memoryManager->getMemorySize();
+        size_t usedMemory = 0;
+
+        const auto& allocationMap = memoryManager->getAllocationMap();
+        for (const auto& [frameIndex, allocation] : allocationMap)
+        {
+            if (allocation.first) // Frame is allocated
+            {
+                usedMemory += memoryManager->getMemPerFrame();
+            }
+        }
+
+        double memoryUtil = (static_cast<double>(usedMemory) / totalMemory) * 100;
+        std::cout << "Memory Usage: " << usedMemory << " MiB / " << totalMemory << " MiB" << std::endl;
+        std::cout << "Memory Util: " << std::fixed << std::setprecision(2) << memoryUtil << "%" << std::endl;
+
+        // Display Running Processes
+        std::cout << "\n----------------------------------------------" << std::endl;
+        std::cout << "Running Processes and memory usage:\n";
+        std::cout << "----------------------------------------------" << std::endl;
+
+        const auto& allProcesses = scheduler->getAllProcess();
+        std::unordered_set<int> activePIDs;
+
+        // Collect PIDs of processes with allocated memory
+        for (const auto& [frameIndex, allocation] : allocationMap)
+        {
+            if (allocation.first) // If frame is allocated
+            {
+                activePIDs.insert(allocation.second);
+            }
+        }
+
+        if (activePIDs.empty())
+        {
+            std::cout << "No running processes in memory.\n";
+        }
+        else
+        {
+            for (const auto& process : allProcesses)
+            {
+                if (activePIDs.find(process->getID()) != activePIDs.end())
+                {
+                    std::string processName = process->getName(); 
+                    size_t processMemory = memoryManager->getMemPerProc(); 
+                    std::cout << processName << " " << processMemory << " MiB" << std::endl;
+                }
+            }
+        }
+        std::cout << "----------------------------------------------\n";
+
+}
+
     else if (command == "debug-info")
     {
         std::cout << "Size of Ready Queue: " << Scheduler::getInstance()->getSize() << '\n';
