@@ -74,7 +74,7 @@ std::chrono::system_clock::time_point Process::getCreationTime() const
 
 Process::state Process::getState()
 {
-	std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
+	//std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
 	return this->processState;
 }
 

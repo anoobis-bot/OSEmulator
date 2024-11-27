@@ -144,7 +144,7 @@ void Scheduler::roundRobin()
         this->getFirstProcess()->setCoreID(core->getCoreID());
         this->getFirstProcess()->runningState();
         this->removeFirstProcess();
-        Scheduler::getInstance()->memoryReport(quantumCycleCounter);  // Pass quantumCycle as counter
+        //Scheduler::getInstance()->memoryReport(quantumCycleCounter);  // Pass quantumCycle as counter
         quantumCycleCounter++;
         mtx.unlock(); // Unlock mutex
     }
@@ -245,6 +245,7 @@ void Scheduler::schedulerTestLoop()
         cv.wait_for(lock, std::chrono::duration<double>(batchProcessFreq), [this] {
             return !schedulerTestFlag;
         });
+        //std::unique_lock<std::mutex> unlock(mtx);
     }
 }
 
