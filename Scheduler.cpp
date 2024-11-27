@@ -79,6 +79,11 @@ void Scheduler::firstComeFirstServe()
     // Check each core for attached processes and assign empty cores.
     for (Core* core : cores)
     {
+        if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::FINISHED)
+        {
+            core->detachProcess();
+            continue;
+        }
         if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::RUNNING)
         {
             continue;
@@ -104,6 +109,11 @@ void Scheduler::roundRobin()
     // Check each core for attached processes and assign empty cores.
     for (Core* core : cores)
     {
+        if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::FINISHED)
+        {
+            core->detachProcess();
+            continue;
+        }
         if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() != Process::FINISHED && !core->finishedQuantumCycle())
         {
             continue;

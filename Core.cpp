@@ -32,6 +32,8 @@ void Core::attachProcess(std::shared_ptr<Process> process)
 
 void Core::detachProcess()
 {
+	MemoryManager::getInstance()->deallocate(attachedProcess->getID(), attachedProcess->getMemoryRequired());
+	attachedProcess->setInMemory(false);
 	this->attachedProcess = nullptr;
 }
 
@@ -52,10 +54,10 @@ void Core::runFCFS()
 			{
 				this->attachedProcess->run();
 			}
-			else if (this->attachedProcess->getState() == Process::FINISHED)
-			{
-				detachProcess();
-			}
+			//else if (this->attachedProcess->getState() == Process::FINISHED)
+			//{
+			//	detachProcess();
+			//}
 		}
 		this->mtx.unlock();
 		std::this_thread::sleep_for(std::chrono::duration<double>(this->delayPerExec));
@@ -76,12 +78,10 @@ void Core::runRR()
 				this->attachedProcess->run();
 				this->quantumCycle = this->quantumCycle + 1;
 			}
-			else if (this->attachedProcess->getState() == Process::FINISHED)
-			{
-				MemoryManager::getInstance()->deallocate(attachedProcess->getID(), attachedProcess->getMemoryRequired());
-				attachedProcess->setInMemory(false);
-				detachProcess();
-			}
+			//else if (this->attachedProcess->getState() == Process::FINISHED)
+			//{
+			//	detachProcess();
+			//}
 		}
 		
 		this->mtx.unlock();
