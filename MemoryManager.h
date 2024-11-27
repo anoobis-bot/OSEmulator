@@ -12,7 +12,7 @@ public:
 
 	bool allocate(int pid, size_t size);
 	void deallocate(int pid, size_t size);
-	bool canAllocate(size_t size, size_t* frameIndex);
+	bool canAllocateFlatMem(size_t size, size_t* frameIndex);
 
 	size_t getnNumFrames();
 	size_t getMemorySize();

@@ -34,7 +34,7 @@ size_t MemoryManager::sizeToFrame(size_t size)
 }
 
 
-bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
+bool MemoryManager::canAllocateFlatMem(size_t size, size_t *frameIndex)
 {
     bool allocated = false;
 
@@ -64,7 +64,7 @@ bool MemoryManager::allocate(int pid, size_t size)
 {
 	size_t frameIndex;
 
-	if (canAllocate(size, &frameIndex))
+	if (canAllocateFlatMem(size, &frameIndex))
 	{
 		for (size_t i = frameIndex; i < frameIndex + sizeToFrame(size); i++)
 		{
