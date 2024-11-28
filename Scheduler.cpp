@@ -172,9 +172,9 @@ void Scheduler::roundRobin()
         this->getFirstProcess()->runningState();
         this->removeFirstProcess();
         
-        if (quantumCycleCounter % Scheduler::getInstance()->getQuantumCycles() == 0) {
-            Scheduler::getInstance()->memoryReport(quantumCycleCounter);
-        }
+        //if (quantumCycleCounter % Scheduler::getInstance()->getQuantumCycles() == 0) {
+        //    Scheduler::getInstance()->memoryReport(quantumCycleCounter);
+        //}
         quantumCycleCounter++;
         mtx.unlock(); // Unlock mutex
     }
