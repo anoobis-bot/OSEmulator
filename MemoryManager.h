@@ -12,7 +12,7 @@ public:
 
 	bool allocate(int pid, size_t size);
 	void deallocate(int pid, size_t size);
-	bool canAllocateFlatMem(size_t size, size_t* frameIndex);
+	bool canAllocate(size_t size, size_t* frameIndex);
 
 	size_t getnNumFrames();
 	size_t getMemorySize();
@@ -32,6 +32,8 @@ private:
 	size_t memPerFrame = 0;
 	size_t memPerProc = 0;
 	size_t numFrames = 0;
+
+	bool pagingAlgo;
 
 	size_t sizeToFrame(size_t size);
 };

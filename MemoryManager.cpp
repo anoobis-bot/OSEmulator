@@ -19,13 +19,31 @@ MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame, size_t memPerPr
 {
     this->memPerFrame = memPerFrame;
 	this->memPerProc = memPerProc;
-
 	memory = std::vector<char>(memSize, '.');
-    numFrames = sizeToFrame(memSize);
-    for (size_t i = 0; i < numFrames; i++)
-    {
-        allocationMap[i] = std::make_pair(false, 0);
-    }
+
+	// Paging allocator
+	if (memSize != memPerFrame)
+		this->pagingAlgo = true;
+	else
+		this->pagingAlgo = false;
+
+	if (pagingAlgo)
+	{
+		this->numFrames = sizeToFrame(memSize);
+		for (size_t i = 0; i < numFrames; i++)
+		{
+			allocationMap[i] = std::make_pair(false, 0);
+		}
+	}
+
+	else
+	{
+		numFrames = sizeToFrame(memSize);
+		for (size_t i = 0; i < numFrames; i++)
+		{
+			allocationMap[i] = std::make_pair(false, 0);
+		}
+	}
 }
 
 size_t MemoryManager::sizeToFrame(size_t size)
@@ -34,7 +52,7 @@ size_t MemoryManager::sizeToFrame(size_t size)
 }
 
 
-bool MemoryManager::canAllocateFlatMem(size_t size, size_t *frameIndex)
+bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 {
     bool allocated = false;
 
@@ -64,7 +82,7 @@ bool MemoryManager::allocate(int pid, size_t size)
 {
 	size_t frameIndex;
 
-	if (canAllocateFlatMem(size, &frameIndex))
+	if (canAllocate(size, &frameIndex))
 	{
 		for (size_t i = frameIndex; i < frameIndex + sizeToFrame(size); i++)
 		{
