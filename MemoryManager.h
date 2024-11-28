@@ -3,12 +3,15 @@
 #include <unordered_map>
 #include <vector>
 #include "Process.h"
+#include "BackingStore.h"
 
 class MemoryManager
 {
 public:
 	static void initialize(size_t memSize, size_t memPerFrame, size_t memPerProc);
 	static MemoryManager* getInstance();
+
+	BackingStore* getBackingStore();
 
 	bool allocate(int pid, size_t size);
 	void deallocate(int pid, size_t size);
@@ -24,6 +27,8 @@ private:
 	// Singleton Members
 	MemoryManager(size_t memSize, size_t memPerFrame, size_t memPerProc);
 	static MemoryManager* sharedInstance;
+
+	BackingStore backingStore;
 
 	// Memory
 	std::vector<char> memory;

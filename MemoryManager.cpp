@@ -162,3 +162,7 @@ size_t MemoryManager::getMemPerProc() {
 size_t MemoryManager::getnNumFrames() {
 	return numFrames;
 }
+
+BackingStore* MemoryManager::getBackingStore() {
+	return &backingStore;
+}
