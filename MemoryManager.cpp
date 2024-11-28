@@ -33,6 +33,7 @@ MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame, size_t memPerPr
 		for (size_t i = 0; i < numFrames; i++)
 		{
 			allocationMap[i] = std::make_pair(false, 0);
+			freeFrames.push_back(i);
 		}
 	}
 
@@ -55,6 +56,11 @@ size_t MemoryManager::sizeToFrame(size_t size)
 bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 {
     bool allocated = false;
+
+	if (pagingAlgo)
+	{
+		
+	}
 
 	for (size_t mainPointer = 0; mainPointer < numFrames; mainPointer++)
 	{

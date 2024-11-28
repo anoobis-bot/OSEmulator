@@ -28,6 +28,7 @@ private:
 	// Memory
 	std::vector<char> memory;
 	std::unordered_map<size_t, std::pair<bool, int>> allocationMap;
+	std::list<size_t> freeFrames;
 	size_t maxOverallMem = 0;
 	size_t memPerFrame = 0;
 	size_t memPerProc = 0;
