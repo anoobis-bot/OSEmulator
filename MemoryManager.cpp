@@ -55,33 +55,37 @@ size_t MemoryManager::sizeToFrame(size_t size)
 
 bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 {
-    bool allocated = false;
+    bool canAllocate = false;
 
 	if (pagingAlgo)
 	{
-		
+		if (sizeToFrame(size) >= freeFrames.size())
+			canAllocate = true;
 	}
 
-	for (size_t mainPointer = 0; mainPointer < numFrames; mainPointer++)
+	else
 	{
-		allocated = true;
-		for(size_t tracker = mainPointer; tracker < mainPointer + sizeToFrame(size); tracker++)
+		for (size_t mainPointer = 0; mainPointer < numFrames; mainPointer++)
 		{
-			if (allocationMap[tracker].first == true)
+			canAllocate = true;
+			for (size_t tracker = mainPointer; tracker < mainPointer + sizeToFrame(size); tracker++)
 			{
-				mainPointer = tracker + 1;
-				allocated = false;
+				if (allocationMap[tracker].first == true)
+				{
+					mainPointer = tracker + 1;
+					canAllocate = false;
+					break;
+				}
+			}
+			if (canAllocate == true)
+			{
+				*frameIndex = mainPointer;
 				break;
 			}
 		}
-		if (allocated == true)
-		{
-			*frameIndex = mainPointer;
-			break;
-		}
 	}
 
-	return allocated;
+	return canAllocate;
 }
 
 bool MemoryManager::allocate(int pid, size_t size)
