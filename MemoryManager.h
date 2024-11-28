@@ -14,7 +14,7 @@ public:
 	BackingStore* getBackingStore();
 
 	bool allocate(std::shared_ptr<Process>);
-	void deallocate(int pid, size_t size);
+	void deallocate(std::shared_ptr<Process> process);
 	bool canAllocate(size_t size, size_t* frameIndex);
 
 	size_t getnNumFrames();

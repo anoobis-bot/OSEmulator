@@ -48,6 +48,9 @@ public:
 	std::vector<size_t> getAllocatedFrames();
 	void clearAllocatedFrames();
 
+	void setStartingMemIndex(size_t index);
+	size_t getStartingMemIndex();
+
 private:
 	String processName;
 	std::chrono::system_clock::time_point creationTime;

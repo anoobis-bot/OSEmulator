@@ -153,13 +153,25 @@ bool MemoryManager::allocatePaging(std::shared_ptr<Process> process)
 }
 
 
-void MemoryManager::deallocate(int pid, size_t size)
+void MemoryManager::deallocate(std::shared_ptr<Process> process)
 {
-	for (int i  = 0; i < totalFrames; i++)
+	if (pagingAlgo)
 	{
-		if (allocationMap[i].second == pid)
+		std::vector<size_t> frames = process->getAllocatedFrames();
+
+		for (size_t frameIndex : frames)
 		{
-			allocationMap[i].first = false;
+			std::get<bool>(frameTable[frameIndex]) = false;
+		}
+	}
+
+	else
+	{
+		size_t startIndex = process->getStartingMemIndex();
+
+		for (size_t frameIndex = startIndex; frameIndex < startIndex + process->getMemoryRequired(); frameIndex++)
+		{
+			std::get<bool>(frameTable[frameIndex]) = false;
 		}
 	}
 }

@@ -123,6 +123,16 @@ void Process::clearAllocatedFrames()
 	this->allocatedFrames.clear();
 }
 
+void Process::setStartingMemIndex(size_t index)
+{
+	this->startingMemIndex = index;
+}
+
+size_t Process::getStartingMemIndex()
+{
+	return this->startingMemIndex;
+}
+
 
 
 void Process::printInfo()
