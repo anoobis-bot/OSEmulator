@@ -36,6 +36,9 @@ private:
 
 	bool pagingAlgo;
 
+	bool allocatePaging(int pid, size_t size);
+	bool allocateFlatMem(int pid, size_t size);
+
 	size_t sizeToFrame(size_t size);
 };
 

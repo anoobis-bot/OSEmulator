@@ -127,7 +127,7 @@ void Scheduler::roundRobin()
             continue;
         }
 
-        mtx.lock(); // Lock mutex for thread safety
+        mtx.lock(); 
         if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() != Process::FINISHED && core->finishedQuantumCycle())
         {
             core->getAttachedProcess()->setCoreID(-1);
@@ -135,7 +135,7 @@ void Scheduler::roundRobin()
             reAddProcess(core->getAttachedProcess());
         }
 
-        while (!getFirstProcess()->isInMemory())
+        /*while (!getFirstProcess()->isInMemory())
         {
             if(MemoryManager::getInstance()->allocate(getFirstProcess()->getID(), getFirstProcess()->getMemoryRequired()))
             {
@@ -146,7 +146,7 @@ void Scheduler::roundRobin()
                 reAddProcess(getFirstProcess());
                 removeFirstProcess();
             }
-        }
+        }*/
 
         core->attachProcess(this->getFirstProcess());
         core->resetQuantumCycle();

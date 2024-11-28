@@ -90,6 +90,14 @@ bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 
 bool MemoryManager::allocate(int pid, size_t size)
 {
+	if (pagingAlgo)
+		return false;
+	else
+		return allocateFlatMem(pid, size);
+}
+
+bool MemoryManager::allocateFlatMem(int pid, size_t size)
+{
 	size_t frameIndex;
 
 	if (canAllocate(size, &frameIndex))
@@ -105,6 +113,23 @@ bool MemoryManager::allocate(int pid, size_t size)
 	return false;
 }
 
+bool MemoryManager::allocatePaging(int pid, size_t size)
+{
+	bool allocated = false;
+
+	do
+	{
+		allocated = canAllocate(size, nullptr);
+
+		if (!allocated)
+		{
+			
+		}
+
+	} while (!allocated);
+}
+
+
 void MemoryManager::deallocate(int pid, size_t size)
 {
 	for (int i  = 0; i < numFrames; i++)
@@ -115,6 +140,8 @@ void MemoryManager::deallocate(int pid, size_t size)
 		}
 	}
 }
+
+
 
 const std::unordered_map<size_t, std::pair<bool, int>>& MemoryManager::getAllocationMap() const {
 	return allocationMap;
