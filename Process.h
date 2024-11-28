@@ -44,7 +44,10 @@ public:
 	bool isInMemory();
 	void setInMemory(bool inMemory);
 
-	Time::time_point getTimeInMemory();
+	//Time::time_point getTimeInMemory();
+
+	std::vector<size_t> getAllocatedFrames();
+	void clearAllocatedFrames();
 
 private:
 	String processName;
@@ -65,7 +68,7 @@ private:
 	bool inMemory;
 	std::vector<size_t> allocatedFrames;
 	size_t startingMemIndex;
-	Time::time_point timeInMemory;
+	//Time::time_point timeInMemory;
 
 	std::mutex mtx;
 

@@ -30,7 +30,7 @@ MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame)
 		this->totalFrames = sizeToFrame(memSize);
 		for (size_t i = 0; i < totalFrames; i++)
 		{
-			pageTable[i] = std::make_tuple(false, 0, Time::time_point::min());
+			frameTable[i] = std::make_tuple(false, 0, Time::time_point::min());
 			freeFrames.push_back(i);
 		}
 	}
@@ -139,25 +139,41 @@ void MemoryManager::deallocate(int pid, size_t size)
 	}
 }
 
-int MemoryManager::backingStoreOperation()
+void MemoryManager::backingStoreOperation()
 {
-	
+	std::shared_ptr<Process> process = findOldestProcessInMemory();
+	transferToBackingStore(process);
 }
 
-int MemoryManager::findOldestProcessInMemory()
+std::shared_ptr<Process> MemoryManager::findOldestProcessInMemory()
 {
-	Time::time_point oldestTime = std::get<Time::time_point>(pageTable[0]);
-	int pid = std::get<int>(pageTable[0]);
+	Time::time_point oldestTime = std::get<Time::time_point>(frameTable[0]);
+	std::shared_ptr<Process> process = std::get<std::shared_ptr<Process>>(frameTable[0]);
 	for (size_t i = 1; i < totalFrames; i++)
 	{
-		if (std::get<Time::time_point>(pageTable[i]) < oldestTime)
+		if (std::get<Time::time_point>(frameTable[i]) < oldestTime)
 		{
-			oldestTime = std::get<Time::time_point>(pageTable[i]);
-			pid = std::get<int>(pageTable[i]);
+			oldestTime = std::get<Time::time_point>(frameTable[i]);
+			process = std::get<std::shared_ptr<Process>>(frameTable[i]);
 		}
 	}
 
-	return pid;
+	return process;
+}
+
+void MemoryManager::transferToBackingStore(std::shared_ptr<Process> process)
+{
+	std::vector<size_t> frames = process->getAllocatedFrames();
+
+	for (size_t frameIndex : frames)
+	{
+		std::get<bool>(frameTable[frameIndex]) = false;
+	}
+
+	process->clearAllocatedFrames();
+
+	// store in backing store
+	bStore.push_back(process);
 }
 
 
