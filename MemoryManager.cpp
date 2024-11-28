@@ -114,18 +114,20 @@ bool MemoryManager::allocateFlatMem(int pid, size_t size)
 
 bool MemoryManager::allocatePaging(int pid, size_t size)
 {
-	bool allocated = false;
+	bool possible = false;
 
 	do
 	{
-		allocated = canAllocate(size, nullptr);
+		possible = canAllocate(size, nullptr);
 
-		if (!allocated)
+		if (!possible)
 		{
-			
+			backingStoreOperation();
 		}
 
-	} while (!allocated);
+	} while (!possible);
+
+
 }
 
 
@@ -174,7 +176,7 @@ void MemoryManager::transferToBackingStore(std::shared_ptr<Process> process)
 	process->clearAllocatedFrames();
 
 	// store in backing store
-	bStore.push_back(process);
+	backingStore.storeProcess(process);
 }
 
 
