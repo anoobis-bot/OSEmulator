@@ -8,7 +8,7 @@
 class MemoryManager
 {
 public:
-	static void initialize(size_t memSize, size_t memPerFrame, size_t memPerProc);
+	static void initialize(size_t memSize, size_t memPerFrame);
 	static MemoryManager* getInstance();
 
 	BackingStore* getBackingStore();
@@ -25,7 +25,7 @@ public:
 
 private: 
 	// Singleton Members
-	MemoryManager(size_t memSize, size_t memPerFrame, size_t memPerProc);
+	MemoryManager(size_t memSize, size_t memPerFrame);
 	static MemoryManager* sharedInstance;
 
 	BackingStore backingStore;

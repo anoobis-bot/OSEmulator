@@ -12,10 +12,10 @@ std::mutex Scheduler::mtx;
 
 // Initialize the shared instance of the Scheduler
 void Scheduler::initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-    double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t memPerProc) {
+    double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t minMemPerProc, size_t maxMemPerProc) {
     if (!sharedInstance)
     {
-        sharedInstance = new Scheduler(scheduleAlgo, quantumCycleMax, numCores, delayPerExec, minInstructions, maxInstruction, batchProcessFreq, memPerProc);
+        sharedInstance = new Scheduler(scheduleAlgo, quantumCycleMax, numCores, delayPerExec, minInstructions, maxInstruction, batchProcessFreq, minMemPerProc, maxMemPerProc);
     }
 }
 
@@ -49,7 +49,7 @@ Scheduler* Scheduler::getInstance()
 
 // Constructor for Scheduler
 Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-    double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t memPerProc) : isRunning(true)
+    double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t minMemPerProc, size_t maxMemPerProc) : isRunning(true)
 {
     // Initialize the cores
     for (int i = 0; i < numCores; i++)
@@ -63,7 +63,8 @@ Scheduler::Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, in
 	this->minInstructions = minInstructions;
 	this->maxInstructions = maxInstruction;
 	this->batchProcessFreq = batchProcessFreq;
-    this->memPerProc = memPerProc;
+    this->minMemPerProc = minMemPerProc;
+	this->maxMemPerProc = maxMemPerProc;
 
     // Start the worker thread
     this->workerThread = std::thread(&Scheduler::run, this);
@@ -81,6 +82,14 @@ void Scheduler::firstComeFirstServe()
     {
         if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::FINISHED)
         {
+            // Get the process ID of the finished process
+            int processID = core->getAttachedProcess()->getID();
+
+            // Remove the process from processMemoryMap
+            auto& processMemoryMap = getProcessMemoryMap();
+            if (processMemoryMap.find(processID) != processMemoryMap.end()) {
+                processMemoryMap.erase(processID);
+            }
             core->detachProcess();
             continue;
         }
@@ -111,6 +120,14 @@ void Scheduler::roundRobin()
     {
         if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::FINISHED)
         {
+            // Get the process ID of the finished process
+            int processID = core->getAttachedProcess()->getID();
+
+            // Remove the process from processMemoryMap
+            auto& processMemoryMap = getProcessMemoryMap();
+            if (processMemoryMap.find(processID) != processMemoryMap.end()) {
+                processMemoryMap.erase(processID);
+            }
             core->detachProcess();
             continue;
         }
@@ -154,7 +171,10 @@ void Scheduler::roundRobin()
         this->getFirstProcess()->setCoreID(core->getCoreID());
         this->getFirstProcess()->runningState();
         this->removeFirstProcess();
-        //Scheduler::getInstance()->memoryReport(quantumCycleCounter);  // Pass quantumCycle as counter
+        
+        if (quantumCycleCounter % Scheduler::getInstance()->getQuantumCycles() == 0) {
+            Scheduler::getInstance()->memoryReport(quantumCycleCounter);
+        }
         quantumCycleCounter++;
         mtx.unlock(); // Unlock mutex
     }
@@ -264,18 +284,39 @@ void Scheduler::createProcess(int processID)
 {
     std::random_device rd;  // Random number seed
     std::mt19937 gen(rd()); // Random number generator (Mersenne Twister)
-    std::uniform_int_distribution<> dis(minInstructions, maxInstructions);
 
-    int totalinstructions = dis(gen);
+    // Generate random instructions
+    std::uniform_int_distribution<> disInstructions(minInstructions, maxInstructions);
+    int totalInstructions = disInstructions(gen);
 
+    // Calculate min and max powers of 2 within the range
+    int minPower = std::ceil(std::log2(minMemPerProc));
+    int maxPower = std::floor(std::log2(maxMemPerProc));
+
+    // Ensure minPower and maxPower are valid
+    if (minPower > maxPower) {
+        throw std::invalid_argument("No power of 2 values within the specified memory range");
+    }
+
+    // Randomly select a power of 2
+    std::uniform_int_distribution<> disPower(minPower, maxPower);
+    int randomPower = disPower(gen);
+    int memPerProc = 1 << randomPower; // 2^randomPower
+
+    // Store memory size in the processMemoryMap
+    processMemoryMap[processID] = memPerProc;
+
+    // Create process name and PrintCommand
     std::string processName = "Process_" + std::to_string(processID).substr(0, 2);
-    String toPrint = "Hello world from " + processName;
-    //TODO set mem per proc in config.txt
-    auto process = std::make_shared<Process>(processName, processID, totalinstructions, PrintCommand(toPrint), memPerProc);
+    std::string toPrint = "Hello world from " + processName;
+
+    // Create the Process and BaseScreen
+    auto process = std::make_shared<Process>(processName, processID, totalInstructions, PrintCommand(toPrint), memPerProc);
     auto processScreen = std::make_shared<BaseScreen>(process, processName);
     ConsoleManager::getInstance()->registerScreen(processScreen);
-	addNewProcess(process);
+    addNewProcess(process);
 }
+
 
 float Scheduler::getCPUUtilization()
 {
@@ -327,9 +368,28 @@ unsigned int Scheduler::getMaxInstructions()
 	return maxInstructions;
 }
 
+unsigned int Scheduler::getQuantumCycles()
+{
+	return quantumCycleMax;
+}
+
 size_t Scheduler::getMemPerProc()
 {
     return memPerProc;
+}
+
+size_t Scheduler::getMinMemPerProc()
+{
+	return minMemPerProc;
+}
+
+size_t Scheduler::getMaxMemPerProc()
+{
+	return maxMemPerProc;
+}
+
+std::unordered_map<int, size_t>& Scheduler::getProcessMemoryMap() {
+    return processMemoryMap;
 }
 
 void Scheduler::memoryReport(int quantumCycleCounter) {
@@ -389,15 +449,26 @@ void Scheduler::memoryReport(int quantumCycleCounter) {
 
     // Gather memory allocation boundaries per process
     size_t frameSize = MemoryManager::getInstance()->getMemPerFrame();
-    size_t processBlockSize = MemoryManager::getInstance()->getMemPerProc();
-    size_t blockFrames = processBlockSize / frameSize;
+    const auto& processMemoryMap = Scheduler::getInstance()->getProcessMemoryMap(); 
+
     std::vector<std::tuple<size_t, size_t, int>> boundaries;  // (upperLimit, lowerLimit, processID)
 
-    for (size_t i = 0; i < MemoryManager::getInstance()->getnNumFrames(); ) {
+    for (size_t i = 0; i < MemoryManager::getInstance()->getnNumFrames(); )
+    {
         auto& frame = MemoryManager::getInstance()->getAllocationMap().at(i);
 
         if (frame.first) {  // Frame is allocated
             int processID = frame.second;
+
+            // Get process-specific memory block size
+            auto it = processMemoryMap.find(processID);
+            if (it == processMemoryMap.end()) {
+                std::cerr << "Error: Memory size not found for process ID " << processID << "\n";
+                return; // Or handle the error as needed
+            }
+
+            size_t processBlockSize = it->second;
+            size_t blockFrames = processBlockSize / frameSize;
 
             // Calculate memory boundaries for the process block
             size_t lowerLimit = i * frameSize;
