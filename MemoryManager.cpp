@@ -15,7 +15,7 @@ MemoryManager* MemoryManager::getInstance()
     return sharedInstance;
 }
 
-MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame)
+MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame) : backingStore("backing_store.txt")
 {
     this->memPerFrame = memPerFrame;
 
@@ -37,7 +37,7 @@ MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame)
 
 	else
 	{
-		totalFrames = sizeToFrame(memSize);
+		totalFrames = memSize;
 		for (size_t i = 0; i < totalFrames; i++)
 		{
 			allocationMap[i] = std::make_pair(false, 0);
@@ -68,7 +68,7 @@ bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 			canAllocate = true;
 			for (size_t tracker = mainPointer; tracker < mainPointer + sizeToFrame(size); tracker++)
 			{
-				if (allocationMap[tracker].first == true)
+				if (std::get<bool>(frameTable[tracker]) == true) 
 				{
 					mainPointer = tracker + 1;
 					canAllocate = false;
@@ -89,7 +89,7 @@ bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 bool MemoryManager::allocate(std::shared_ptr<Process> process)
 {
 	if (pagingAlgo)
-		return false;
+		return allocatePaging(process);
 	else
 		return allocateFlatMem(process);
 }
@@ -98,14 +98,26 @@ bool MemoryManager::allocateFlatMem(std::shared_ptr<Process> process)
 {
 	size_t frameIndex;
 
-	if (canAllocate(size, &frameIndex))
+	bool possible = false;
+
+	size_t size = process->getMemoryRequired();
+
+	do
 	{
-		for (size_t i = frameIndex; i < frameIndex + sizeToFrame(size); i++)
+		possible = canAllocate(size, &frameIndex);
+
+		if (!possible)
 		{
-			allocationMap[i] = std::make_pair(true, pid);
+			backingStoreOperation();
 		}
 
-		return true;
+	} while (!possible);
+
+	Time::time_point time_now = Time::now();
+
+	for (size_t i = frameIndex; i < frameIndex + sizeToFrame(size); i++)
+	{
+		frameTable[i] = std::make_tuple(true, process, time_now);
 	}
 
 	return false;
