@@ -30,7 +30,7 @@ MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame)
 		this->totalFrames = sizeToFrame(memSize);
 		for (size_t i = 0; i < totalFrames; i++)
 		{
-			frameTable[i] = std::make_tuple(false, 0, Time::time_point::min());
+			frameTable[i] = std::make_tuple(false, nullptr, Time::time_point::min());
 			freeFrames.push_back(i);
 		}
 	}
@@ -86,15 +86,15 @@ bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 	return canAllocate;
 }
 
-bool MemoryManager::allocate(int pid, size_t size)
+bool MemoryManager::allocate(std::shared_ptr<Process> process)
 {
 	if (pagingAlgo)
 		return false;
 	else
-		return allocateFlatMem(pid, size);
+		return allocateFlatMem(process);
 }
 
-bool MemoryManager::allocateFlatMem(int pid, size_t size)
+bool MemoryManager::allocateFlatMem(std::shared_ptr<Process> process)
 {
 	size_t frameIndex;
 
@@ -111,9 +111,11 @@ bool MemoryManager::allocateFlatMem(int pid, size_t size)
 	return false;
 }
 
-bool MemoryManager::allocatePaging(int pid, size_t size)
+bool MemoryManager::allocatePaging(std::shared_ptr<Process> process)
 {
 	bool possible = false;
+
+	size_t size = process->getMemoryRequired();
 
 	do
 	{
@@ -126,7 +128,16 @@ bool MemoryManager::allocatePaging(int pid, size_t size)
 
 	} while (!possible);
 
+	Time::time_point time_now = Time::now();
 
+	for (size_t i = 0; i < sizeToFrame(size); i++)
+	{
+		size_t frameIndex = freeFrames.front();
+		frameTable[frameIndex] = std::tuple(true, process, time_now);
+		freeFrames.pop_front();
+	}
+
+	return possible;
 }
 
 
@@ -170,6 +181,7 @@ void MemoryManager::transferToBackingStore(std::shared_ptr<Process> process)
 	for (size_t frameIndex : frames)
 	{
 		std::get<bool>(frameTable[frameIndex]) = false;
+		freeFrames.push_back(frameIndex);
 	}
 
 	process->clearAllocatedFrames();

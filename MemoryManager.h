@@ -13,7 +13,7 @@ public:
 
 	BackingStore* getBackingStore();
 
-	bool allocate(int pid, size_t size);
+	bool allocate(std::shared_ptr<Process>);
 	void deallocate(int pid, size_t size);
 	bool canAllocate(size_t size, size_t* frameIndex);
 
@@ -43,8 +43,8 @@ private:
 
 	bool pagingAlgo;
 
-	bool allocatePaging(int pid, size_t size);
-	bool allocateFlatMem(int pid, size_t size);
+	bool allocatePaging(std::shared_ptr<Process>);
+	bool allocateFlatMem(std::shared_ptr<Process>);
 
 	void backingStoreOperation();
 	std::shared_ptr<Process> findOldestProcessInMemory();

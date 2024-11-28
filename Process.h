@@ -45,7 +45,6 @@ public:
 	void setInMemory(bool inMemory);
 
 	//Time::time_point getTimeInMemory();
-
 	std::vector<size_t> getAllocatedFrames();
 	void clearAllocatedFrames();
 
