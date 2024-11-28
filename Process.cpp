@@ -108,10 +108,21 @@ void Process::setInMemory(bool inMemory)
 	this->inMemory = inMemory;
 }
 
-Time::time_point Process::getTimeInMemory()
+//Time::time_point Process::getTimeInMemory()
+//{
+//	return this->timeInMemory;
+//}
+
+std::vector<size_t> Process::getAllocatedFrames()
 {
-	return this->timeInMemory;
+	return this->allocatedFrames;
 }
+
+void Process::clearAllocatedFrames()
+{
+	this->allocatedFrames.clear();
+}
+
 
 
 void Process::printInfo()

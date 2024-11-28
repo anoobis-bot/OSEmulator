@@ -32,6 +32,7 @@ private:
 
 	// Memory
 	std::list<std::shared_ptr<Process>> memory;
+	std::list<std::shared_ptr<Process>> bStore;
 	std::unordered_map<size_t, std::pair<bool, int>> allocationMap;
 	std::unordered_map<size_t, std::tuple<bool, std::shared_ptr<Process>, Time::time_point>> frameTable;
 	std::list<size_t> freeFrames;	
@@ -45,8 +46,9 @@ private:
 	bool allocatePaging(int pid, size_t size);
 	bool allocateFlatMem(int pid, size_t size);
 
-	int backingStoreOperation();
+	void backingStoreOperation();
 	std::shared_ptr<Process> findOldestProcessInMemory();
+	void transferToBackingStore(std::shared_ptr<Process>);
 
 	size_t sizeToFrame(size_t size);
 };

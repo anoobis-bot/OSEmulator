@@ -140,9 +140,10 @@ void MemoryManager::deallocate(int pid, size_t size)
 	}
 }
 
-int MemoryManager::backingStoreOperation()
+void MemoryManager::backingStoreOperation()
 {
-	
+	std::shared_ptr<Process> process = findOldestProcessInMemory();
+	transferToBackingStore(process);
 }
 
 std::shared_ptr<Process> MemoryManager::findOldestProcessInMemory()
@@ -159,6 +160,21 @@ std::shared_ptr<Process> MemoryManager::findOldestProcessInMemory()
 	}
 
 	return process;
+}
+
+void MemoryManager::transferToBackingStore(std::shared_ptr<Process> process)
+{
+	std::vector<size_t> frames = process->getAllocatedFrames();
+
+	for (size_t frameIndex : frames)
+	{
+		std::get<bool>(frameTable[frameIndex]) = false;
+	}
+
+	process->clearAllocatedFrames();
+
+	// store in backing store
+	bStore.push_back(process);
 }
 
 
