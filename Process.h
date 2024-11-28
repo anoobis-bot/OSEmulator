@@ -61,6 +61,10 @@ private:
 
 	size_t memoryRequired;
 	bool inMemory;
+	std::vector<size_t> allocatedFrames;
+	size_t startingMemIndex;
+	typedef std::chrono::system_clock time;
+	time::time_point timeInMemory;
 
 	std::mutex mtx;
 
