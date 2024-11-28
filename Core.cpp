@@ -32,7 +32,7 @@ void Core::attachProcess(std::shared_ptr<Process> process)
 
 void Core::detachProcess()
 {
-	MemoryManager::getInstance()->deallocate(attachedProcess->getID(), attachedProcess->getMemoryRequired());
+	MemoryManager::getInstance()->deallocate(this->attachedProcess);
 	attachedProcess->setInMemory(false);
 	this->attachedProcess = nullptr;
 }
