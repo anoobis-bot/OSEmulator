@@ -19,7 +19,6 @@ MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame, size_t memPerPr
 {
     this->memPerFrame = memPerFrame;
 	this->memPerProc = memPerProc;
-	memory = std::vector<char>(memSize, '.');
 
 	// Paging allocator
 	if (memSize != memPerFrame)
@@ -29,18 +28,18 @@ MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame, size_t memPerPr
 
 	if (pagingAlgo)
 	{
-		this->numFrames = sizeToFrame(memSize);
-		for (size_t i = 0; i < numFrames; i++)
+		this->totalFrames = sizeToFrame(memSize);
+		for (size_t i = 0; i < totalFrames; i++)
 		{
-			allocationMap[i] = std::make_pair(false, 0);
+			pageTable[i] = std::make_tuple(false, 0, Time::time_point::min());
 			freeFrames.push_back(i);
 		}
 	}
 
 	else
 	{
-		numFrames = sizeToFrame(memSize);
-		for (size_t i = 0; i < numFrames; i++)
+		totalFrames = sizeToFrame(memSize);
+		for (size_t i = 0; i < totalFrames; i++)
 		{
 			allocationMap[i] = std::make_pair(false, 0);
 		}
@@ -65,7 +64,7 @@ bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 
 	else
 	{
-		for (size_t mainPointer = 0; mainPointer < numFrames; mainPointer++)
+		for (size_t mainPointer = 0; mainPointer < totalFrames; mainPointer++)
 		{
 			canAllocate = true;
 			for (size_t tracker = mainPointer; tracker < mainPointer + sizeToFrame(size); tracker++)
@@ -132,13 +131,34 @@ bool MemoryManager::allocatePaging(int pid, size_t size)
 
 void MemoryManager::deallocate(int pid, size_t size)
 {
-	for (int i  = 0; i < numFrames; i++)
+	for (int i  = 0; i < totalFrames; i++)
 	{
 		if (allocationMap[i].second == pid)
 		{
 			allocationMap[i].first = false;
 		}
 	}
+}
+
+int MemoryManager::backingStoreOperation()
+{
+	
+}
+
+int MemoryManager::findOldestProcessInMemory()
+{
+	Time::time_point oldestTime = std::get<Time::time_point>(pageTable[0]);
+	int pid = std::get<int>(pageTable[0]);
+	for (size_t i = 1; i < totalFrames; i++)
+	{
+		if (std::get<Time::time_point>(pageTable[i]) < oldestTime)
+		{
+			oldestTime = std::get<Time::time_point>(pageTable[i]);
+			pid = std::get<int>(pageTable[i]);
+		}
+	}
+
+	return pid;
 }
 
 
@@ -160,5 +180,5 @@ size_t MemoryManager::getMemPerProc() {
 }
 
 size_t MemoryManager::getnNumFrames() {
-	return numFrames;
+	return totalFrames;
 }

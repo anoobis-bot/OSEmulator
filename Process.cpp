@@ -108,6 +108,10 @@ void Process::setInMemory(bool inMemory)
 	this->inMemory = inMemory;
 }
 
+Time::time_point Process::getTimeInMemory()
+{
+	return this->timeInMemory;
+}
 
 
 void Process::printInfo()

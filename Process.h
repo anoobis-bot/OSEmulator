@@ -44,6 +44,8 @@ public:
 	bool isInMemory();
 	void setInMemory(bool inMemory);
 
+	Time::time_point getTimeInMemory();
+
 private:
 	String processName;
 	std::chrono::system_clock::time_point creationTime;
@@ -63,8 +65,7 @@ private:
 	bool inMemory;
 	std::vector<size_t> allocatedFrames;
 	size_t startingMemIndex;
-	typedef std::chrono::system_clock time;
-	time::time_point timeInMemory;
+	Time::time_point timeInMemory;
 
 	std::mutex mtx;
 

@@ -26,18 +26,23 @@ private:
 	static MemoryManager* sharedInstance;
 
 	// Memory
-	std::vector<char> memory;
+	std::list<std::shared_ptr<Process>> memory;
+	std::list<std::shared_ptr<Process>> backingStore;
 	std::unordered_map<size_t, std::pair<bool, int>> allocationMap;
+	std::unordered_map<size_t, std::tuple<bool, int, Time::time_point>> pageTable;
 	std::list<size_t> freeFrames;
 	size_t maxOverallMem = 0;
 	size_t memPerFrame = 0;
 	size_t memPerProc = 0;
-	size_t numFrames = 0;
+	size_t totalFrames = 0;
 
 	bool pagingAlgo;
 
 	bool allocatePaging(int pid, size_t size);
 	bool allocateFlatMem(int pid, size_t size);
+
+	int backingStoreOperation();
+	int findOldestProcessInMemory();
 
 	size_t sizeToFrame(size_t size);
 };
