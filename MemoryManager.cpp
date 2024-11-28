@@ -2,11 +2,11 @@
 
 MemoryManager* MemoryManager::sharedInstance = nullptr;
 
-void MemoryManager::initialize(size_t memSize, size_t memPerFrame, size_t memPerProc)
+void MemoryManager::initialize(size_t memSize, size_t memPerFrame)
 {
     if (!sharedInstance)
     {
-        sharedInstance = new MemoryManager(memSize, memPerFrame, memPerProc);
+        sharedInstance = new MemoryManager(memSize, memPerFrame);
     }
 }
 
@@ -15,10 +15,9 @@ MemoryManager* MemoryManager::getInstance()
     return sharedInstance;
 }
 
-MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame, size_t memPerProc)
+MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame)
 {
     this->memPerFrame = memPerFrame;
-	this->memPerProc = memPerProc;
 
 	// Paging allocator
 	if (memSize != memPerFrame)

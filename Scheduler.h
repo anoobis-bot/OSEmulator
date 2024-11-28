@@ -10,6 +10,7 @@
 #include "Process.h"
 #include "Core.h"
 #include <algorithm>
+#include <unordered_map>
 
 #include "ScheduleAlgo.h"
 
@@ -17,7 +18,7 @@ class Scheduler {
 public:
 
 	static void initialize(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-        double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t memPerProc);
+        double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t minMemPerProc, size_t maxMemPerProc);
 
     static Scheduler* getInstance();
 
@@ -46,10 +47,15 @@ public:
 
 	unsigned int getMinInstructions();
 	unsigned int getMaxInstructions();
+	size_t getMinMemPerProc();
+	size_t getMaxMemPerProc();
+
+    std::unordered_map<int, size_t>& getProcessMemoryMap();
+	unsigned int getQuantumCycles();
 
 private:
     Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,
-        double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t memPerProc);
+        double delayPerExec, unsigned minInstructions, unsigned maxInstruction, unsigned batchProcessFreq, size_t minMemPerProc, size_t maxMemPerProc);
     ~Scheduler();
 
     // Disable copying and assignment
@@ -64,6 +70,8 @@ private:
     unsigned int maxInstructions;       
     double delayPerExec;
     size_t memPerProc = 0;
+	size_t minMemPerProc = 0;
+    size_t maxMemPerProc = 0;
     bool schedulerTestFlag = false;
     std::condition_variable cv;
 
@@ -75,6 +83,7 @@ private:
     std::vector<std::shared_ptr<Process>> readyQueue;
     std::vector<std::shared_ptr<Process>> allProcesses;
     std::vector<std::thread> threads;
+    std::unordered_map<int, size_t> processMemoryMap;
 
     std::thread testThread;
     int processCounter = 0;

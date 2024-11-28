@@ -146,17 +146,48 @@ void MainConsole::handleCommand(String command)
             {
                 std::random_device rd;  // Random number seed
                 std::mt19937 gen(rd()); // Random number generator (Mersenne Twister)
-                std::uniform_int_distribution<> dis(Scheduler::getInstance()->getMinInstructions(), Scheduler::getInstance()->getMaxInstructions());
 
-                int totalinstructions = dis(gen);
-                // Register new process and switch to the screen
-                String toPrint = "Hello world from " + processName;
-                auto process = std::make_shared<Process>(processName, Scheduler::getInstance()->getAllProcess().size(), totalinstructions, PrintCommand(toPrint), Scheduler::getInstance()->getMemPerProc());
+                // Generate random instructions
+                std::uniform_int_distribution<> disInstructions(Scheduler::getInstance()->getMinInstructions(), Scheduler::getInstance()->getMaxInstructions());
+                int totalInstructions = disInstructions(gen);
+
+                // Calculate min and max powers of 2 within the range
+                int minPower = std::ceil(std::log2(Scheduler::getInstance()->getMinMemPerProc()));
+                int maxPower = std::floor(std::log2(Scheduler::getInstance()->getMaxMemPerProc()));
+
+                // Ensure minPower and maxPower are valid
+                if (minPower > maxPower) {
+                    throw std::invalid_argument("No power of 2 values within the specified memory range");
+                }
+
+                // Randomly select a power of 2
+                std::uniform_int_distribution<> disPower(minPower, maxPower);
+                int randomPower = disPower(gen);
+                int memPerProc = 1 << randomPower; // 2^randomPower
+
+                // Get the next process ID
+                int processID = Scheduler::getInstance()->getAllProcess().size();
+
+                // Add the processID and memPerProc to the processMemoryMap
+                Scheduler::getInstance()->getProcessMemoryMap()[processID] = memPerProc;
+
+                // Create the process and screen
+                std::string toPrint = "Hello world from " + processName;
+                auto process = std::make_shared<Process>(
+                    processName,
+                    processID,
+                    totalInstructions,
+                    PrintCommand(toPrint),
+                    memPerProc
+                );
+
                 auto processScreen = std::make_shared<BaseScreen>(process, processName);
 
+                // Add the new process and register the screen
                 Scheduler::getInstance()->addNewProcess(process);
-
                 consoleManager->registerScreen(processScreen);
+
+                // Switch to the newly created screen
                 consoleManager->switchToScreen(processName);
             }
             else
@@ -230,6 +261,7 @@ void MainConsole::handleCommand(String command)
         std::cout << "----------------------------------------------" << std::endl;
 
         const auto& allProcesses = scheduler->getAllProcess();
+        const auto& processMemoryMap = scheduler->getProcessMemoryMap();
         std::unordered_set<int> activePIDs;
 
         // Collect PIDs of processes with allocated memory
@@ -249,17 +281,29 @@ void MainConsole::handleCommand(String command)
         {
             for (const auto& process : allProcesses)
             {
-                if (activePIDs.find(process->getID()) != activePIDs.end())
+                int processID = process->getID();
+                if (activePIDs.find(processID) != activePIDs.end())
                 {
-                    std::string processName = process->getName(); 
-                    size_t processMemory = memoryManager->getMemPerProc(); 
+                    std::string processName = process->getName();
+
+                    // Retrieve the memory size for the process from processMemoryMap
+                    size_t processMemory = 0;
+                    auto it = processMemoryMap.find(processID);
+                    if (it != processMemoryMap.end())
+                    {
+                        processMemory = it->second; // Get memory size for the process
+                    }
+                    else
+                    {
+                        std::cerr << "Error: Process memory not found for PID " << processID << std::endl;
+                    }
+
                     std::cout << processName << " " << processMemory << " MiB" << std::endl;
                 }
             }
         }
         std::cout << "----------------------------------------------\n";
-
-}
+    }
 
     else if (command == "debug-info")
     {

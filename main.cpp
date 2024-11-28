@@ -29,7 +29,8 @@ bool readConfigAndInitializeScheduler() {
         unsigned int batchProcessFreq = 0;
         size_t maxOverallMem = 0;
         size_t memPerFrame = 0;
-        size_t memPerProc = 0;
+        size_t minMemPerProc = 0;
+        size_t maxMemPerProc = 0;
 
         const unsigned long long maxValue = 4294967296; // 2^32
         bool isValid = true; // Flag to track if all parameters are valid
@@ -127,9 +128,13 @@ bool readConfigAndInitializeScheduler() {
                     memPerFrame = value;
                     std::cout << "Memory per Frame: " << memPerFrame << std::endl;
                 }
-                else if (param == "mem-per-proc") {
-                    memPerProc = value;
-                    std::cout << "Memory per process: " << memPerProc << std::endl;
+                else if (param == "min-mem-per-proc") {
+                    minMemPerProc = value;
+                    std::cout << "Memory per process: " << minMemPerProc << std::endl;
+                }
+                else if (param == "max-mem-per-proc") {
+                    maxMemPerProc = value;
+                    std::cout << "Memory per process: " << maxMemPerProc << std::endl;
                 }
                 else {
                     std::cerr << "Unknown parameter in config.txt: " << param << std::endl;
@@ -139,8 +144,9 @@ bool readConfigAndInitializeScheduler() {
 
         // Initialize the Scheduler only if all parameters are valid
         if (isValid) {
-            Scheduler::initialize(scheduleAlgo, quantumCycles, numCores, delayPerExec, minInstructions, maxInstructions, batchProcessFreq, memPerProc);
-            MemoryManager::initialize(maxOverallMem, memPerFrame, memPerProc);
+            Scheduler::initialize(scheduleAlgo, quantumCycles, numCores, delayPerExec, minInstructions, maxInstructions, 
+                batchProcessFreq, minMemPerProc, maxMemPerProc);
+            MemoryManager::initialize(maxOverallMem, memPerFrame);
             std::cout << " Emulator initialized successfully." << std::endl;
             return true; 
         }
