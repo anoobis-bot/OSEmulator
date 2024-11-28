@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AConsole.cpp" />
+    <ClCompile Include="BackingStore.cpp" />
     <ClCompile Include="BaseScreen.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
     <ClCompile Include="Core.cpp" />
@@ -142,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AConsole.h" />
+    <ClInclude Include="BackingStore.h" />
     <ClInclude Include="BaseScreen.h" />
     <ClInclude Include="ConsoleManager.h" />
     <ClInclude Include="Core.h" />
