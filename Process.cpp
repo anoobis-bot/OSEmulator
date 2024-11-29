@@ -144,7 +144,7 @@ size_t Process::getStartingMemIndex()
 void Process::printInfo()
 {
 	//std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before modifying the vector
-	if (this->getCoreID() != -1 && this->processState != Process::FINISHED)
+	if (this->getCoreID() != -1 && this->processState != Process::FINISHED && this->inMemory)
 	{
 		std::cout << std::left << std::setw(25) << this->getName()
 			<< std::setw(30) << this->getFormattedTime()

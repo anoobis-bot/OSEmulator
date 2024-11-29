@@ -80,6 +80,13 @@ void Scheduler::firstComeFirstServe()
     // Check each core for attached processes and assign empty cores.
     for (Core* core : cores)
     {
+        if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::RUNNING && !core->getAttachedProcess()->isInMemory())
+        {
+            core->getAttachedProcess()->setCoreID(-1);
+            core->getAttachedProcess()->readyState();
+            reAddProcess(core->getAttachedProcess());
+            core->detachProcess();
+        }
         if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::FINISHED)
         {
             // Get the process ID of the finished process
@@ -122,6 +129,13 @@ void Scheduler::roundRobin()
     // Check each core for attached processes and assign empty cores.
     for (Core* core : cores)
     {
+        if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::RUNNING && !core->getAttachedProcess()->isInMemory())
+        {
+            core->getAttachedProcess()->setCoreID(-1);
+            core->getAttachedProcess()->readyState();
+            reAddProcess(core->getAttachedProcess());
+            core->detachProcess();
+        }
         if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::FINISHED)
         {
             // Get the process ID of the finished process
