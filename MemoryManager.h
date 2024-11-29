@@ -13,7 +13,7 @@ public:
 
 	BackingStore* getBackingStore();
 
-	bool allocate(std::shared_ptr<Process>);
+	bool allocate(std::shared_ptr<Process> process);
 	void deallocate(std::shared_ptr<Process> process);
 	bool canAllocate(size_t size, size_t* frameIndex);
 
@@ -43,12 +43,12 @@ private:
 
 	bool pagingAlgo;
 
-	bool allocatePaging(std::shared_ptr<Process>);
-	bool allocateFlatMem(std::shared_ptr<Process>);
+	bool allocatePaging(std::shared_ptr<Process> process);
+	bool allocateFlatMem(std::shared_ptr<Process> process);
 
 	void backingStoreOperation();
 	std::shared_ptr<Process> findOldestProcessInMemory();
-	void transferToBackingStore(std::shared_ptr<Process>);
+	void transferToBackingStore(std::shared_ptr<Process> process);
 
 	size_t sizeToFrame(size_t size);
 };

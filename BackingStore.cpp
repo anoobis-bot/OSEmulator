@@ -39,7 +39,8 @@ std::shared_ptr<Process> BackingStore::loadProcess(int pid) {
         return it->second;
     }
     else {
-        std::shared_ptr<Process> process = std::make_shared<Process>();
+        //std::shared_ptr<Process> process = std::make_shared<Process>();
+        std::shared_ptr<Process> process;
         if (inputFile.is_open()) {
             inputFile.clear();
             inputFile.seekg(0, std::ios::beg); // Reset to beginning
@@ -48,7 +49,8 @@ std::shared_ptr<Process> BackingStore::loadProcess(int pid) {
             float totalInstructions, memorySize;
             while (inputFile >> id >> name >> totalInstructions >> memorySize) {
                 if (id == pid) {
-                    process = std::make_shared<Process>(name, id, totalInstructions, memorySize, 1);
+                    std::string toPrint = "Hello world from " + name;
+                    process = std::make_shared<Process>(name, id, totalInstructions, PrintCommand(toPrint), memorySize);
                     storedProcesses[id] = process;
                     return process;
                 }

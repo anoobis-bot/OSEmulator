@@ -40,7 +40,7 @@ MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame) : backingStore(
 		totalFrames = memSize;
 		for (size_t i = 0; i < totalFrames; i++)
 		{
-			allocationMap[i] = std::make_pair(false, 0);
+			frameTable[i] = std::make_tuple(false, nullptr, Time::time_point::min());
 		}
 	}
 }
