@@ -43,6 +43,7 @@ std::shared_ptr<Process> Core::getAttachedProcess()
 
 void Core::runFCFS()
 {
+	// TODO count the total, active, and inactive cpu ticks of all cores
 	while(true)
 	{
 		this->mtx.lock();
@@ -50,6 +51,7 @@ void Core::runFCFS()
 		{
 			if (this->attachedProcess->getState() != Process::FINISHED && this->attachedProcess->isInMemory())
 			{
+				// TODO inside here is an active cpu tick, anything outside of this is inactive
 				this->attachedProcess->run();
 			}
 			//else if (this->attachedProcess->getState() == Process::FINISHED)
@@ -65,6 +67,7 @@ void Core::runFCFS()
 
 void Core::runRR()
 {
+	// TODO count the total, active, and inactive cpu ticks of all cores
 	while (true)
 	{
 		this->mtx.lock();
@@ -73,6 +76,7 @@ void Core::runRR()
 			if (!this->finishedQuantumCycle()
 				&& this->attachedProcess->getState() == Process::RUNNING && this->attachedProcess->isInMemory())
 			{
+				// TODO inside here is an active cpu tick, anything outside of this is inactive
 				this->attachedProcess->run();
 				this->quantumCycle = this->quantumCycle + 1;
 			}

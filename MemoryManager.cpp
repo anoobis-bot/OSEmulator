@@ -109,6 +109,7 @@ bool MemoryManager::allocateFlatMem(std::shared_ptr<Process> process)
 	bool possible = false;
 
 	// load Process from backing store if its there, if not use the process made by Scheduler.
+	// TODO counter for loading from backing store "num paged in"
 	if (backingStore.loadProcess(process->getID()) != nullptr)
 		process = backingStore.loadProcess(process->getID());
 
@@ -224,6 +225,7 @@ void MemoryManager::transferToBackingStore(std::shared_ptr<Process> process)
 {
 	deallocate(process);
 	// store in backing store
+	// TODO counter for pages stored in backing store "num paged out"
 	backingStore.storeProcess(process);
 }
 
