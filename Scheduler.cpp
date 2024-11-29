@@ -318,7 +318,7 @@ void Scheduler::createProcess(int processID)
     // Randomly select a power of 2
     std::uniform_int_distribution<> disPower(minPower, maxPower);
     int randomPower = disPower(gen);
-    int memPerProc = 2 << randomPower; // 2^randomPower
+    size_t memPerProc = 2 << randomPower; // 2^randomPower
 
     // Store memory size in the processMemoryMap
     processMemoryMap[processID] = memPerProc;
