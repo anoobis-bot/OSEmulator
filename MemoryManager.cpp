@@ -116,7 +116,7 @@ bool MemoryManager::allocateFlatMem(std::shared_ptr<Process> process)
 	auto loadedProcess = backingStore.loadProcess(process->getID());
 	if (loadedProcess != nullptr)
 	{
-		process = loadedProcess;
+		//process = loadedProcess;
 		numPagedIn++; 
 	}
 
@@ -149,7 +149,11 @@ bool MemoryManager::allocatePaging(std::shared_ptr<Process> process)
 
 	// load Process from backing store if its there, if not use the process made by Scheduler.
 	if (backingStore.loadProcess(process->getID()) != nullptr)
-		process = backingStore.loadProcess(process->getID());
+	{
+		//process = backingStore.loadProcess(process->getID());
+		numPagedIn++;
+	}
+		
 
 	size_t size = process->getMemoryRequired();
 
