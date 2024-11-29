@@ -57,7 +57,7 @@ bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 
 	if (pagingAlgo)
 	{
-		if (sizeToFrame(size) >= freeFrames.size())
+		if (sizeToFrame(size) <= freeFrames.size())
 			canAllocate = true;
 	}
 
