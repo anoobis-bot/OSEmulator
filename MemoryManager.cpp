@@ -88,10 +88,18 @@ bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 
 bool MemoryManager::allocate(std::shared_ptr<Process> process)
 {
+	bool succeed= false;
 	if (pagingAlgo)
-		return allocatePaging(process);
+		succeed = allocatePaging(process);
 	else
-		return allocateFlatMem(process);
+		succeed = allocateFlatMem(process);
+
+	if (succeed)
+	{
+		process->setInMemory(true);
+	}
+
+	return succeed;
 }
 
 bool MemoryManager::allocateFlatMem(std::shared_ptr<Process> process)
@@ -120,7 +128,7 @@ bool MemoryManager::allocateFlatMem(std::shared_ptr<Process> process)
 		frameTable[i] = std::make_tuple(true, process, time_now);
 	}
 
-	return false;
+	return possible;
 }
 
 bool MemoryManager::allocatePaging(std::shared_ptr<Process> process)
@@ -163,6 +171,8 @@ void MemoryManager::deallocate(std::shared_ptr<Process> process)
 		{
 			std::get<bool>(frameTable[frameIndex]) = false;
 		}
+
+		process->clearAllocatedFrames();
 	}
 
 	else
@@ -173,7 +183,11 @@ void MemoryManager::deallocate(std::shared_ptr<Process> process)
 		{
 			std::get<bool>(frameTable[frameIndex]) = false;
 		}
+
+		process->setStartingMemIndex(0);
 	}
+
+	process->setInMemory(false);
 }
 
 void MemoryManager::backingStoreOperation()
@@ -200,16 +214,7 @@ std::shared_ptr<Process> MemoryManager::findOldestProcessInMemory()
 
 void MemoryManager::transferToBackingStore(std::shared_ptr<Process> process)
 {
-	std::vector<size_t> frames = process->getAllocatedFrames();
-
-	for (size_t frameIndex : frames)
-	{
-		std::get<bool>(frameTable[frameIndex]) = false;
-		freeFrames.push_back(frameIndex);
-	}
-
-	process->clearAllocatedFrames();
-
+	deallocate(process);
 	// store in backing store
 	backingStore.storeProcess(process);
 }
