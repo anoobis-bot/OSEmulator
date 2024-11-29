@@ -90,6 +90,8 @@ void Scheduler::firstComeFirstServe()
             if (processMemoryMap.find(processID) != processMemoryMap.end()) {
                 processMemoryMap.erase(processID);
             }
+
+            MemoryManager::getInstance()->deallocate(core->getAttachedProcess());
             core->detachProcess();
             continue;
         }
