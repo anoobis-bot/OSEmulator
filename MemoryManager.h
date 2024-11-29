@@ -21,8 +21,12 @@ public:
 	size_t getMemorySize();
 	size_t getMemPerFrame();
 	size_t getMemPerProc();
+	std::list<size_t> getFreeFrames();
 	const std::unordered_map<size_t, std::pair<bool, int>>& getAllocationMap() const;
 	const std::unordered_map<size_t, std::tuple<bool, std::shared_ptr<Process>, Time::time_point>>& getFrameTable() const;
+
+	size_t getNumPagedIn() const { return numPagedIn; }
+	size_t getNumPagedOut() const { return numPagedOut; }
 
 
 private: 
@@ -42,6 +46,9 @@ private:
 	size_t memPerFrame = 0;
 	size_t memPerProc = 0;
 	size_t totalFrames = 0;
+
+	size_t numPagedIn = 0;  
+	size_t numPagedOut = 0;
 
 	bool pagingAlgo;
 

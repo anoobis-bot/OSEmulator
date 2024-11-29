@@ -311,6 +311,17 @@ void MainConsole::handleCommand(String command)
         }
         std::cout << "----------------------------------------------\n";
     }
+    else if (command == "vmstat")
+    {
+        std::cout << "Total memory: " << MemoryManager::getInstance()->getMemorySize()<< " KB\n";
+        std::cout << "Used memory: " << (MemoryManager::getInstance()->getnNumFrames()- MemoryManager::getInstance()->getFreeFrames().size()) * MemoryManager::getInstance()->getMemPerFrame() << " KB\n";
+        std::cout << "Free memory: " << MemoryManager::getInstance()->getFreeFrames().size() * MemoryManager::getInstance()->getMemPerFrame() << " KB\n";
+        std::cout << "Idle CPU ticks: " << Scheduler::getInstance()->getIdleCPUTicks() << "\n";
+        std::cout << "Active CPU ticks: " << Scheduler::getInstance()->getActiveCPUTicks() << "\n";
+        std::cout << "Total CPU ticks: " << (Scheduler::getInstance()->getIdleCPUTicks() + Scheduler::getInstance()->getActiveCPUTicks()) << "\n";
+        std::cout << "Num paged in: " << MemoryManager::getInstance()->getNumPagedIn() << "\n";
+        std::cout << "Num paged out: " << MemoryManager::getInstance()->getNumPagedOut() << "\n";
+    }
 
     else if (command == "debug-info")
     {

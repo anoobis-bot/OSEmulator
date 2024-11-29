@@ -130,11 +130,11 @@ bool readConfigAndInitializeScheduler() {
                 }
                 else if (param == "min-mem-per-proc") {
                     minMemPerProc = value;
-                    std::cout << "Memory per process: " << minMemPerProc << std::endl;
+                    std::cout << "Minimum Memory per process: " << minMemPerProc << std::endl;
                 }
                 else if (param == "max-mem-per-proc") {
                     maxMemPerProc = value;
-                    std::cout << "Memory per process: " << maxMemPerProc << std::endl;
+                    std::cout << "Maximum Memory per process: " << maxMemPerProc << std::endl;
                 }
                 else {
                     std::cerr << "Unknown parameter in config.txt: " << param << std::endl;
