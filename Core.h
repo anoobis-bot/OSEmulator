@@ -24,6 +24,22 @@ public:
 
 	void detachProcess();
 
+	void incrementIdleTicks() {
+		idleTicks++;
+	}
+
+	void incrementActiveTicks() {
+		activeTicks++;
+	}
+
+	int getIdleTicks() const {
+		return idleTicks;
+	}
+
+	int getActiveTicks() const {
+		return activeTicks;
+	}
+
 	std::mutex mtx;
 
 private:
@@ -39,5 +55,8 @@ private:
 	unsigned int quantumCycleMax;
 	std::shared_ptr<Process> attachedProcess;
 	std::thread workerThread;
+
+	int idleTicks = 0;
+	int activeTicks = 0;
 };
 

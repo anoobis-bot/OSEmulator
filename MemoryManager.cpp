@@ -103,7 +103,7 @@ bool MemoryManager::allocate(std::shared_ptr<Process> process)
 	{
 		process->setInMemory(true);
 	}
-
+		
 	return succeed;
 }
 
@@ -113,10 +113,12 @@ bool MemoryManager::allocateFlatMem(std::shared_ptr<Process> process)
 
 	bool possible = false;
 
-	// load Process from backing store if its there, if not use the process made by Scheduler.
-	// TODO counter for loading from backing store "num paged in"
-	if (backingStore.loadProcess(process->getID()) != nullptr)
-		process = backingStore.loadProcess(process->getID());
+	auto loadedProcess = backingStore.loadProcess(process->getID());
+	if (loadedProcess != nullptr)
+	{
+		process = loadedProcess;
+		numPagedIn++; 
+	}
 
 	size_t size = process->getMemoryRequired();
 
@@ -146,8 +148,8 @@ bool MemoryManager::allocatePaging(std::shared_ptr<Process> process)
 	bool possible = false;
 
 	// load Process from backing store if its there, if not use the process made by Scheduler.
-	//if (backingStore.loadProcess(process->getID()) != nullptr)
-	//	process = backingStore.loadProcess(process->getID());
+	if (backingStore.loadProcess(process->getID()) != nullptr)
+		process = backingStore.loadProcess(process->getID());
 
 	size_t size = process->getMemoryRequired();
 
@@ -231,11 +233,14 @@ std::shared_ptr<Process> MemoryManager::findOldestProcessInMemory()
 void MemoryManager::transferToBackingStore(std::shared_ptr<Process> process)
 {
 	deallocate(process);
-	// store in backing store
-	// TODO counter for pages stored in backing store "num paged out"
-	//backingStore.storeProcess(process);
+	backingStore.storeProcess(process);
+	numPagedOut++;
 }
 
+std::list<size_t> MemoryManager::getFreeFrames()
+{
+	return freeFrames;
+}
 
 
 const std::unordered_map<size_t, std::pair<bool, int>>& MemoryManager::getAllocationMap() const {

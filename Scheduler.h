@@ -52,6 +52,9 @@ public:
 
     std::unordered_map<int, size_t>& getProcessMemoryMap();
 	unsigned int getQuantumCycles();
+    unsigned int getTotalCPUTicks();
+    unsigned int getIdleCPUTicks();
+    unsigned int getActiveCPUTicks();
 
 private:
     Scheduler(ScheduleAlgo scheduleAlgo, unsigned int quantumCycleMax, int numCores,

@@ -223,6 +223,15 @@ void Scheduler::run()
 {
     while (true)
     {
+        for (Core* core : cores) {
+            if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::RUNNING) {
+                core->incrementActiveTicks();
+            }
+            else {
+                core->incrementIdleTicks();
+            }
+        }
+
         if (this->scheduleAlgo == FCFS)
         {
             firstComeFirstServe();
@@ -234,6 +243,31 @@ void Scheduler::run()
         std::this_thread::sleep_for(std::chrono::duration<double>(this->delayPerExec));
     }
 }
+
+unsigned int Scheduler::getTotalCPUTicks() {
+    unsigned int totalTicks = 0;
+    for (Core* core : cores) {
+        totalTicks += core->getIdleTicks() + core->getActiveTicks();
+    }
+    return totalTicks;
+}
+
+unsigned int Scheduler::getIdleCPUTicks() {
+    unsigned int idleTicks = 0;
+    for (Core* core : cores) {
+        idleTicks += core->getIdleTicks();
+    }
+    return idleTicks;
+}
+
+unsigned int Scheduler::getActiveCPUTicks() {
+    unsigned int activeTicks = 0;
+    for (Core* core : cores) {
+        activeTicks += core->getActiveTicks();
+    }
+    return activeTicks;
+}
+
 
 bool Scheduler::ensureProcessInMemory(std::shared_ptr<Process> process)
 {
@@ -350,7 +384,7 @@ void Scheduler::createProcess(int processID)
     // Randomly select a power of 2
     std::uniform_int_distribution<> disPower(minPower, maxPower);
     int randomPower = disPower(gen);
-    size_t memPerProc = 2 << randomPower; // 2^randomPower
+    size_t memPerProc = 1 << randomPower; // 2^randomPower
 
     // Store memory size in the processMemoryMap
     processMemoryMap[processID] = memPerProc;
