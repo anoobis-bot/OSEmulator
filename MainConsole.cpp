@@ -241,11 +241,12 @@ void MainConsole::handleCommand(String command)
         // Display Memory Usage
         size_t totalMemory = memoryManager->getMemorySize();
         size_t usedMemory = 0;
+        const auto& frameTable = memoryManager->getFrameTable();
 
-        const auto& allocationMap = memoryManager->getAllocationMap();
-        for (const auto& [frameIndex, allocation] : allocationMap)
+        // Calculate used memory based on frame table
+        for (const auto& [frameIndex, frameData] : frameTable)
         {
-            if (allocation.first) // Frame is allocated
+            if (std::get<bool>(frameData)) // If frame is allocated
             {
                 usedMemory += memoryManager->getMemPerFrame();
             }
@@ -264,12 +265,16 @@ void MainConsole::handleCommand(String command)
         const auto& processMemoryMap = scheduler->getProcessMemoryMap();
         std::unordered_set<int> activePIDs;
 
-        // Collect PIDs of processes with allocated memory
-        for (const auto& [frameIndex, allocation] : allocationMap)
+        // Collect PIDs of processes in memory
+        for (const auto& [frameIndex, frameData] : frameTable)
         {
-            if (allocation.first) // If frame is allocated
+            if (std::get<bool>(frameData)) // If frame is allocated
             {
-                activePIDs.insert(allocation.second);
+                auto process = std::get<std::shared_ptr<Process>>(frameData);
+                if (process)
+                {
+                    activePIDs.insert(process->getID());
+                }
             }
         }
 
@@ -285,20 +290,22 @@ void MainConsole::handleCommand(String command)
                 if (activePIDs.find(processID) != activePIDs.end())
                 {
                     std::string processName = process->getName();
+                    size_t memoryUsed = 0;
 
-                    // Retrieve the memory size for the process from processMemoryMap
-                    size_t processMemory = 0;
-                    auto it = processMemoryMap.find(processID);
-                    if (it != processMemoryMap.end())
+                    // Calculate memory usage for the process
+                    for (const auto& [frameIndex, frameData] : frameTable)
                     {
-                        processMemory = it->second; // Get memory size for the process
-                    }
-                    else
-                    {
-                        std::cerr << "Error: Process memory not found for PID " << processID << std::endl;
+                        if (std::get<bool>(frameData)) // If frame is allocated
+                        {
+                            auto allocatedProcess = std::get<std::shared_ptr<Process>>(frameData);
+                            if (allocatedProcess && allocatedProcess->getID() == processID)
+                            {
+                                memoryUsed += memoryManager->getMemPerFrame();
+                            }
+                        }
                     }
 
-                    std::cout << processName << " " << processMemory << " MiB" << std::endl;
+                    std::cout << processName << " (PID: " << processID << ") " << memoryUsed << " MiB" << std::endl;
                 }
             }
         }

@@ -22,6 +22,8 @@ public:
 	size_t getMemPerFrame();
 	size_t getMemPerProc();
 	const std::unordered_map<size_t, std::pair<bool, int>>& getAllocationMap() const;
+	const std::unordered_map<size_t, std::tuple<bool, std::shared_ptr<Process>, Time::time_point>>& getFrameTable() const;
+
 
 private: 
 	// Singleton Members

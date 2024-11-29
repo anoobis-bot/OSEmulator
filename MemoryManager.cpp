@@ -18,6 +18,7 @@ MemoryManager* MemoryManager::getInstance()
 MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame) : backingStore("backing_store.txt")
 {
     this->memPerFrame = memPerFrame;
+	this->maxOverallMem = memSize;
 
 	// Paging allocator
 	if (memSize != memPerFrame)
@@ -239,7 +240,7 @@ const std::unordered_map<size_t, std::pair<bool, int>>& MemoryManager::getAlloca
 }
 
 size_t MemoryManager::getMemorySize() {
-	return memory.size();
+	return maxOverallMem;
 }
 
 size_t MemoryManager::getMemPerFrame() {
@@ -256,4 +257,8 @@ size_t MemoryManager::getnNumFrames() {
 
 BackingStore* MemoryManager::getBackingStore() {
 	return &backingStore;
+}
+
+const std::unordered_map<size_t, std::tuple<bool, std::shared_ptr<Process>, Time::time_point>>& MemoryManager::getFrameTable() const {
+	return frameTable;
 }
