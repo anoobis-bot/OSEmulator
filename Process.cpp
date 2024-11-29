@@ -105,6 +105,7 @@ bool Process::isInMemory()
 
 void Process::setInMemory(bool inMemory)
 {
+	std::lock_guard<std::mutex> lock(this->mtx);
 	this->inMemory = inMemory;
 }
 

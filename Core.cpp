@@ -32,6 +32,7 @@ void Core::attachProcess(std::shared_ptr<Process> process)
 
 void Core::detachProcess()
 {
+	std::lock_guard<std::mutex> lock(this->mtx);
 	this->attachedProcess = nullptr;
 }
 

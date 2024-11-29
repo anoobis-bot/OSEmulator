@@ -24,8 +24,10 @@ public:
 
 	void detachProcess();
 
-private:
 	std::mutex mtx;
+
+private:
+	
 
 	double delayPerExec;
 	unsigned int currentTickDelay;

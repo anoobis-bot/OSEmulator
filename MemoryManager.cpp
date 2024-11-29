@@ -90,6 +90,9 @@ bool MemoryManager::canAllocate(size_t size, size_t *frameIndex)
 
 bool MemoryManager::allocate(std::shared_ptr<Process> process)
 {
+	if (process->getMemoryRequired() > this->maxOverallMem)
+		return false;
+
 	bool succeed= false;
 	if (pagingAlgo)
 		succeed = allocatePaging(process);

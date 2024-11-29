@@ -113,12 +113,20 @@ void Scheduler::firstComeFirstServe()
         }
 
         // Attach the first process to the core
-        core->attachProcess(this->getFirstProcess());
-        ensureProcessInMemory(core->getAttachedProcess());
-        core->resetTickDelay();
-        this->getFirstProcess()->setCoreID(core->getCoreID());
-        this->getFirstProcess()->runningState();
-        this->removeFirstProcess();
+        if (ensureProcessInMemory(this->getFirstProcess()))
+        {
+            core->attachProcess(this->getFirstProcess());
+            core->resetTickDelay();
+            this->getFirstProcess()->setCoreID(core->getCoreID());
+            this->getFirstProcess()->runningState();
+            this->removeFirstProcess();
+        }
+        else
+        {
+            reAddProcess(getFirstProcess());
+            removeFirstProcess();
+        }
+        
     }
 }
 
@@ -186,13 +194,21 @@ void Scheduler::roundRobin()
             }
         }*/
 
-        core->attachProcess(this->getFirstProcess());
-        ensureProcessInMemory(core->getAttachedProcess());
-        core->resetQuantumCycle();
-        core->resetTickDelay();
-        this->getFirstProcess()->setCoreID(core->getCoreID());
-        this->getFirstProcess()->runningState();
-        this->removeFirstProcess();
+        if (ensureProcessInMemory(this->getFirstProcess()))
+        {
+            core->attachProcess(this->getFirstProcess());
+            core->resetQuantumCycle();
+            core->resetTickDelay();
+            this->getFirstProcess()->setCoreID(core->getCoreID());
+            this->getFirstProcess()->runningState();
+            this->removeFirstProcess();
+        }
+        else
+        {
+            reAddProcess(getFirstProcess());
+            removeFirstProcess();
+        }
+        
         
         //if (quantumCycleCounter % Scheduler::getInstance()->getQuantumCycles() == 0) {
         //    Scheduler::getInstance()->memoryReport(quantumCycleCounter);
