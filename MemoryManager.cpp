@@ -215,7 +215,8 @@ void MemoryManager::deallocate(std::shared_ptr<Process> process)
 void MemoryManager::backingStoreOperation()
 {
 	std::shared_ptr<Process> process = findOldestProcessInMemory();
-	transferToBackingStore(process);
+	if (process)
+		transferToBackingStore(process);
 }
 
 std::shared_ptr<Process> MemoryManager::findOldestProcessInMemory()

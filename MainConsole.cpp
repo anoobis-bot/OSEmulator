@@ -105,7 +105,7 @@ void MainConsole::handleCommand(String command)
             else
             {
                 std::cout << "Running Processes:\n";
-            	for (const std::shared_ptr<Process> process : allProcesses)
+            	for (const std::shared_ptr<Process>& process : allProcesses)
                 {
                     process->printInfo();
                     //if (process->getCoreID() != -1 && process->getState() != Process::FINISHED)
