@@ -130,11 +130,14 @@ void Scheduler::roundRobin()
             if (processMemoryMap.find(processID) != processMemoryMap.end()) {
                 processMemoryMap.erase(processID);
             }
+
+            MemoryManager::getInstance()->deallocate(core->getAttachedProcess());
             core->detachProcess();
             continue;
         }
         if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() != Process::FINISHED && !core->finishedQuantumCycle())
         {
+            ensureProcessInMemory(core->getAttachedProcess());
             continue;
         }
         if (this->readyQueue.empty())
@@ -168,6 +171,7 @@ void Scheduler::roundRobin()
         }*/
 
         core->attachProcess(this->getFirstProcess());
+        ensureProcessInMemory(core->getAttachedProcess());
         core->resetQuantumCycle();
         core->resetTickDelay();
         this->getFirstProcess()->setCoreID(core->getCoreID());
@@ -198,6 +202,17 @@ void Scheduler::run()
         std::this_thread::sleep_for(std::chrono::duration<double>(this->delayPerExec));
     }
 }
+
+bool Scheduler::ensureProcessInMemory(std::shared_ptr<Process> process)
+{
+	if (process->isInMemory())
+	{
+        return true;
+	}
+
+    return MemoryManager::getInstance()->allocate(process);
+}
+
 
 // Add a new process to the ready queue
 void Scheduler::addNewProcess(std::shared_ptr<Process> process)

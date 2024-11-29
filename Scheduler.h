@@ -85,6 +85,8 @@ private:
     std::vector<std::thread> threads;
     std::unordered_map<int, size_t> processMemoryMap;
 
+	bool ensureProcessInMemory(std::shared_ptr<Process> process);
+
     std::thread testThread;
     int processCounter = 0;
 
