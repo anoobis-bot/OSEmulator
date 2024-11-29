@@ -56,7 +56,8 @@ std::shared_ptr<Process> BackingStore::loadProcess(int pid) {
                 }
             }
         }
-        throw std::runtime_error("Process not found in backing store.");
+        //throw std::runtime_error("Process not found in backing store.");
+        return nullptr;
     }
 }
 
