@@ -38,6 +38,7 @@ MemoryManager::MemoryManager(size_t memSize, size_t memPerFrame) : backingStore(
 	else
 	{
 		totalFrames = memSize;
+		this->memPerFrame = 1;
 		for (size_t i = 0; i < totalFrames; i++)
 		{
 			frameTable[i] = std::make_tuple(false, nullptr, Time::time_point::min());
