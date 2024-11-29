@@ -51,6 +51,8 @@ public:
 	void setStartingMemIndex(size_t index);
 	size_t getStartingMemIndex();
 
+	void addAllocatedFrame(size_t frameIndex);
+
 private:
 	String processName;
 	std::chrono::system_clock::time_point creationTime;

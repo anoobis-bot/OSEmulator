@@ -103,5 +103,8 @@
     <Text Include="config.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="backing_store.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

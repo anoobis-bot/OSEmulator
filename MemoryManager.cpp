@@ -162,6 +162,7 @@ bool MemoryManager::allocatePaging(std::shared_ptr<Process> process)
 	for (size_t i = 0; i < sizeToFrame(size); i++)
 	{
 		size_t frameIndex = freeFrames.front();
+		process->addAllocatedFrame(frameIndex);
 		frameTable[frameIndex] = std::tuple(true, process, time_now);
 		freeFrames.pop_front();
 	}
@@ -179,6 +180,7 @@ void MemoryManager::deallocate(std::shared_ptr<Process> process)
 		for (size_t frameIndex : frames)
 		{
 			std::get<bool>(frameTable[frameIndex]) = false;
+			freeFrames.push_back(frameIndex);
 		}
 
 		process->clearAllocatedFrames();

@@ -118,6 +118,12 @@ std::vector<size_t> Process::getAllocatedFrames()
 	return this->allocatedFrames;
 }
 
+void Process::addAllocatedFrame(size_t frameIndex)
+{
+	this->allocatedFrames.push_back(frameIndex);
+}
+
+
 void Process::clearAllocatedFrames()
 {
 	this->allocatedFrames.clear();
