@@ -50,7 +50,7 @@ void Core::runFCFS()
 		this->mtx.lock();
 		if (this->hasAttachedProcess())
 		{
-			if (this->attachedProcess->getState() != Process::FINISHED)
+			if (this->attachedProcess->getState() != Process::FINISHED && this->attachedProcess->isInMemory())
 			{
 				this->attachedProcess->run();
 			}
@@ -73,7 +73,7 @@ void Core::runRR()
 		if (this->hasAttachedProcess())
 		{
 			if (!this->finishedQuantumCycle()
-				&& this->attachedProcess->getState() == Process::RUNNING)
+				&& this->attachedProcess->getState() == Process::RUNNING && this->attachedProcess->isInMemory())
 			{
 				this->attachedProcess->run();
 				this->quantumCycle = this->quantumCycle + 1;
