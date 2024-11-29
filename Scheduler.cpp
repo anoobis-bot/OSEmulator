@@ -97,6 +97,7 @@ void Scheduler::firstComeFirstServe()
         }
         if (core->hasAttachedProcess() && core->getAttachedProcess()->getState() == Process::RUNNING)
         {
+            ensureProcessInMemory(core->getAttachedProcess());
             continue;
         }
         if (this->readyQueue.empty())
@@ -106,6 +107,7 @@ void Scheduler::firstComeFirstServe()
 
         // Attach the first process to the core
         core->attachProcess(this->getFirstProcess());
+        ensureProcessInMemory(core->getAttachedProcess());
         core->resetTickDelay();
         this->getFirstProcess()->setCoreID(core->getCoreID());
         this->getFirstProcess()->runningState();
